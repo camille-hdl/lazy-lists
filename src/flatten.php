@@ -16,6 +16,15 @@ namespace LazyLists;
 
 use LazyLists\Exception\InvalidArgumentException;
 
+/**
+ * Flattens nested arrays $levels deep. Ignores associative arrays.
+ * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
+ *
+ * @param integer $levels
+ * @param array|\Traversable|null $list
+ * @see \LazyLists\Transducer\Flatten
+ * @return mixed
+ */
 function flatten(int $levels, $list = null)
 {
     if (\is_null($list)) {

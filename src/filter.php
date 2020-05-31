@@ -16,6 +16,15 @@ namespace LazyLists;
 
 use LazyLists\Exception\InvalidArgumentException;
 
+/**
+ * Returns an array containing the elements of `$list` for which
+ * `$predicate` returns truthy.
+ * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
+ *
+ * @param callable $predicate
+ * @param array|\Traversable|null $list
+ * @return mixed array or \LazyLists\Transducer\Filter
+ */
 function filter(callable $predicate, $list = null)
 {
     if (\is_null($list)) {

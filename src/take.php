@@ -16,6 +16,15 @@ namespace LazyLists;
 
 use LazyLists\Exception\InvalidArgumentException;
 
+/**
+ * Returns an array with the $numberOfItems first elements from $list.
+ * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
+ *
+ * @param integer $numberOfItems
+ * @param array|\Traversable|null $list
+ * @see \LazyLists\Transducer\Take
+ * @return mixed array or \LazyLists\Transducer\Take
+ */
 function take(int $numberOfItems, $list = null)
 {
     if (\is_null($list)) {

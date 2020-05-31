@@ -16,6 +16,16 @@ namespace LazyLists;
 
 use LazyLists\Exception\InvalidArgumentException;
 
+/**
+ * Accumulates each element of $list into a single value.
+ * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
+ *
+ * @param callable $accumulator
+ * @param mixed $initialReduction
+ * @param array|\Traversable|null $list
+ * @see \LazyLists\Transducer\Reduce
+ * @return mixed
+ */
 function reduce(callable $accumulator, $initialReduction, $list = null)
 {
     if (\is_null($list)) {

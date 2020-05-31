@@ -16,6 +16,15 @@ namespace LazyLists;
 
 use LazyLists\Exception\InvalidArgumentException;
 
+/**
+ * Applies `$procedure` to each element in `$list` and returns an array of the result.
+ * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
+ *
+ * @param callable $procedure
+ * @param array|\Traversable|null $list
+ * @see \LazyLists\Transducer\Map
+ * @return mixed array or \LazyLists\Transducer\Map
+ */
 function map(callable $procedure, $list = null)
 {
     if (\is_null($list)) {

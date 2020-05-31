@@ -16,6 +16,16 @@ namespace LazyLists;
 
 use LazyLists\Exception\InvalidArgumentException;
 
+/**
+ * Combines Transducers to create a single "pipeline" function.
+ * ```php
+ * $pipeline = pipe(filter($fn1), map($fn2), flatten($fn3));
+ * $result = $pipeline($iterator);
+ * ```
+ *
+ * @param \LazyLists\Transducer\TransducerInterface[] ...$transducers
+ * @return callable
+ */
 function pipe(...$transducers)
 {
     InvalidArgumentException::assertTransducers($transducers, __FUNCTION__);

@@ -17,7 +17,8 @@ namespace LazyLists\Transducer;
 use LazyLists\LazyIterator;
 
 /**
- *
+ * Models a simple transducer that maintains no internal state.
+ * For example : Map
  */
 abstract class PureTransducer
 {

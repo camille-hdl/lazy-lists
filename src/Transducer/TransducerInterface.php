@@ -22,16 +22,21 @@ use LazyLists\LazyIterator;
 interface TransducerInterface
 {
     /**
-     * Cette fonction DOIT se terminer par un appel sur soit
+     * This function should make use of:
      * * $iterator->yieldToNextTransducer
      * * $iterator->yieldToNextTransducerWithFutureValues
      * * $iterator->skipToNextLoop
+     * * $iterator->completeEarly
      *
      * @param mixed $item
      * @return void
      */
     public function __invoke($item);
 
+    /**
+     * @param LazyIterator $iterator
+     * @return void
+     */
     public function initialize(LazyIterator $iterator);
 
     public function isPure(): bool;
