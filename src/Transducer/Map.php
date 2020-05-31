@@ -38,7 +38,7 @@ class Map extends PureTransducer implements TransducerInterface
         $this->iterator->yieldToNextTransducer($procedure($item));
     }
 
-    public static function getEmptyFinalResult()
+    public function getEmptyFinalResult()
     {
         return [];
     }

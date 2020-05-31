@@ -8,6 +8,7 @@ use function LazyLists\map;
 use function LazyLists\filter;
 use function LazyLists\pipe;
 use function LazyLists\flatten;
+use function LazyLists\reduce;
 
 class PipeTest extends TestCase
 {
@@ -46,9 +47,6 @@ class PipeTest extends TestCase
         $splitInCouples = static function ($v) {
             return [$v - 10, $v];
         };
-        $identity = static function ($v) {
-            return $v;
-        };
         $pipe = pipe(
             flatten(2),
             map($fn),
@@ -58,5 +56,31 @@ class PipeTest extends TestCase
             flatten(1)
         );
         $this->assertSame([11, 21, 21, 31, 31, 41], $pipe($list));
+    }
+
+
+    public function testFlattenReduce()
+    {
+        $list = [1, 2, [[3, 4]]];
+        $plus10 = static function ($v) {
+            return $v * 10;
+        };
+        $plus1 = static function ($v) {
+            return $v + 1;
+        };
+        $isGreaterThanOrEqual20 = static function ($v) {
+            return $v >= 20;
+        };
+        $sum = static function ($acc, $num) {
+            return $acc + $num;
+        };
+        $pipe = pipe(
+            flatten(2),
+            map($plus10),
+            filter($isGreaterThanOrEqual20),
+            map($plus1),
+            reduce($sum, 0)
+        );
+        $this->assertEquals(93, $pipe($list));
     }
 }

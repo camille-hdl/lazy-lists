@@ -60,7 +60,7 @@ class Flatten extends PureTransducer implements TransducerInterface
         $this->iterator->yieldToNextTransducerWithFutureValues($flattened);
     }
 
-    public static function getEmptyFinalResult()
+    public function getEmptyFinalResult()
     {
         return [];
     }

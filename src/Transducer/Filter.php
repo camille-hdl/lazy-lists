@@ -41,7 +41,7 @@ class Filter extends PureTransducer implements TransducerInterface
         }
     }
 
-    public static function getEmptyFinalResult()
+    public function getEmptyFinalResult()
     {
         return [];
     }

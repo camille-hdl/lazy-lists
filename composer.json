@@ -39,6 +39,7 @@
             "src/map.php",
             "src/pipe.php",
             "src/filter.php",
+            "src/reduce.php",
             "src/flatten.php"
         ]
     },

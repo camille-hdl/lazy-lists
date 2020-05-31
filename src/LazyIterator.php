@@ -45,7 +45,7 @@ class LazyIterator
             return $this->finalResultSoFar;
         }
         $this->currentWorkingValue = $this->iterator->current();
-        $this->finalResultSoFar = $this->getLastTransducer()::getEmptyFinalResult();
+        $this->finalResultSoFar = $this->getLastTransducer()->getEmptyFinalResult();
         $this->loop();
         return $this->finalResultSoFar;
     }

@@ -40,7 +40,7 @@ interface TransducerInterface
 
     public function computeNextResult($item);
 
-    public static function getEmptyFinalResult();
+    public function getEmptyFinalResult();
 
     public function computeFinalResult($previousResult, $lastValue);
 }
