@@ -70,13 +70,7 @@ class Flatten extends PureTransducer implements TransducerInterface
         if (\is_null($previousResult)) {
             return [];
         }
-        if (\is_array($lastValue) && !isAssociativeArray($lastValue)) {
-            foreach ($lastValue as $subValue) {
-                $previousResult[] = $lastValue;
-            }
-        } else {
-            $previousResult[] = $lastValue;
-        }
+        $previousResult[] = $lastValue;
         return $previousResult;
     }
 }

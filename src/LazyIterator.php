@@ -17,6 +17,7 @@ namespace LazyLists;
 use ArrayIterator;
 
 use function LazyLists\map;
+use function LazyLists\filter;
 
 /**
  * lazy list processing functions
@@ -27,7 +28,7 @@ class LazyIterator
     protected $transducers;
     protected $currentTransducerIndex;
     protected $computedFutureValues = [];
-    protected $intermediateResultSoFar;
+    protected $currentWorkingValue;
     protected $finalResultSoFar;
 
     public function __construct($subject, array $transducers)
@@ -43,7 +44,7 @@ class LazyIterator
         if (!$this->iterator->valid()) {
             return $this->finalResultSoFar;
         }
-        $this->intermediateResultSoFar = $this->iterator->current();
+        $this->currentWorkingValue = $this->iterator->current();
         $this->finalResultSoFar = $this->getLastTransducer()::getEmptyFinalResult();
         $this->loop();
         return $this->finalResultSoFar;
@@ -53,14 +54,17 @@ class LazyIterator
     {
         while ($this->iterator->valid()) {
             $currentTransducer = $this->getCurrentTransducer();
-            $currentTransducer($this->intermediateResultSoFar);
+            $currentTransducer($this->currentWorkingValue);
         }
     }
 
     public function readNextItem()
     {
-        if (\count($this->computedFutureValues) > 0) {
-            return \array_shift($this->computedFutureValues);
+        $computedValuesInfo = $this->computedValuesToProcess();
+        if (!\is_null($computedValuesInfo)) {
+            return $this->readComputedValueToProcessForIndex(
+                $computedValuesInfo["index"]
+            );
         }
         $this->iterator->next();
         if ($this->iterator->valid()) {
@@ -85,15 +89,16 @@ class LazyIterator
 
     public function yieldToNextTransducerWithFutureValues(array $futureValues)
     {
-        \array_unshift($this->computedFutureValues, ...$futureValues);
-        var_dump($this->computedFutureValues);
-        $this->intermediateResultSoFar = $futureValues;
+        $index = $this->currentTransducerIndex;
+        $nextWorkingValue = \array_shift($futureValues);
+        $this->computedFutureValues[$index + 1] = $futureValues;
+        $this->currentWorkingValue = $nextWorkingValue;
         $nextTransducer = $this->nextTransducer();
     }
 
-    public function yieldToNextTransducer($newIntermediateResultSoFar)
+    public function yieldToNextTransducer($newCurrentWorkingValue)
     {
-        $this->intermediateResultSoFar = $newIntermediateResultSoFar;
+        $this->currentWorkingValue = $newCurrentWorkingValue;
         $nextTransducer = $this->nextTransducer();
     }
 
@@ -102,11 +107,72 @@ class LazyIterator
         $this->resetLoop();
     }
 
+    protected function hasComputedValuesForIndex(int $index)
+    {
+        return isset($this->computedFutureValues[$index]) &&
+            \count($this->computedFutureValues[$index]) > 0;
+    }
+
+    protected function readComputedValueToProcessForIndex(int $index)
+    {
+        if (
+            isset($this->computedFutureValues[$index]) &&
+            \count($this->computedFutureValues[$index]) > 0
+        ) {
+            return \array_shift($this->computedFutureValues[$index]);
+        }
+        return null;
+    }
+
+    protected function computedValuesToProcess()
+    {
+        for ($i = $this->currentTransducerIndex; $i > 0; $i--) {
+            if (
+                $this->hasComputedValuesForIndex($i)
+            ) {
+                return [
+                    "index" => $i,
+                    "values" => $this->computedFutureValues[$i]
+                ];
+            }
+        }
+        return null;
+    }
+
     public function resetLoop()
     {
-        $this->computedFutureValues = [];
-        $this->currentTransducerIndex = 0;
-        $this->intermediateResultSoFar = $this->readNextItem();
+        $computedValuesToProcess = $this->computedValuesToProcess();
+        if (\is_null($computedValuesToProcess)) {
+            $this->computedFutureValues = [];
+            $this->currentTransducerIndex = 0;
+        } else {
+            $this->currentTransducerIndex = $computedValuesToProcess["index"];
+        }
+        $this->currentWorkingValue = $this->readNextItem();
+    }
+
+    protected function readAllFutureComputedValues(int $fromIndex): array
+    {
+        $output = [];
+        $isFutureTransducerIndexWithComputedValues = function ($index) use ($fromIndex) {
+            return $index > $fromIndex && $this->hasComputedValuesForIndex($index);
+        };
+        $getAllFutureValuesForIndex = function ($index) {
+            $output = [];
+            while ($this->hasComputedValuesForIndex($index)) {
+                $output[] = $this->readComputedValueToProcessForIndex($index);
+            }
+            return $output;
+        };
+        $indices = filter(
+            $isFutureTransducerIndexWithComputedValues,
+            \array_keys($this->computedFutureValues)
+        );
+        $futureValuesPerIndex = map(
+            $getAllFutureValuesForIndex,
+            $indices
+        );
+        return flatten(1, $futureValuesPerIndex);
     }
 
     public function updateFinalResult()
@@ -114,8 +180,20 @@ class LazyIterator
         $lastTransducer = $this->getLastTransducer();
         $this->finalResultSoFar = $lastTransducer->computeFinalResult(
             $this->finalResultSoFar,
-            $this->intermediateResultSoFar
+            $this->currentWorkingValue
         );
+        /**
+         * If we have "orphans" computedFutureValues,
+         * we have to add them to the final result
+         */
+        foreach (
+            $this->readAllFutureComputedValues($this->currentTransducerIndex) as $value
+        ) {
+            $this->finalResultSoFar = $lastTransducer->computeFinalResult(
+                $this->finalResultSoFar,
+                $value
+            );
+        }
     }
 
     protected function initializeTransducers()

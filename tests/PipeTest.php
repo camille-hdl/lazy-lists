@@ -43,12 +43,20 @@ class PipeTest extends TestCase
         $isGreaterThanOrEqual20 = static function ($v) {
             return $v >= 20;
         };
+        $splitInCouples = static function ($v) {
+            return [$v - 10, $v];
+        };
+        $identity = static function ($v) {
+            return $v;
+        };
         $pipe = pipe(
             flatten(2),
             map($fn),
             filter($isGreaterThanOrEqual20),
-            map($fn2)
+            map($fn2),
+            map($splitInCouples),
+            flatten(1)
         );
-        $this->assertSame([21, 31, 41], $pipe($list));
+        $this->assertSame([11, 21, 21, 31, 31, 41], $pipe($list));
     }
 }
