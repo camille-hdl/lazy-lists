@@ -108,4 +108,24 @@ class PipeTest extends TestCase
         );
         $this->assertSame(["A", "B", "C"], $pipe($list));
     }
+    public function testDirectoryIterator()
+    {
+        $directory = new \DirectoryIterator(__DIR__ . '/testFiles');
+        $noDotFile = static function ($file) {
+            return !$file->isDot();
+        };
+        $toJSONArray = static function ($file) {
+            return json_decode($file->openFile()->fgets(), true);
+        };
+        $pipe = pipe(
+            filter($noDotFile),
+            map($toJSONArray),
+            map(static function ($v) {
+                return $v["a"];
+            })
+        );
+        $output = $pipe($directory);
+        sort($output);
+        $this->assertSame([1, 2, 3], $output);
+    }
 }
