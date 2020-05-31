@@ -1,8 +1,8 @@
 {
     "name": "camille\u002Dhdl\/lazy\u002Dlists",
-    "description": "lazy\u0020list\u0020processing\u0020functions",
+    "description": "Lazy list processing helpers",
     "type": "library",
-    "keywords": ["filter", "map", "reduce", "lazy", "iteration", "transducers"],
+    "keywords": ["filter", "map", "reduce", "lazy", "iteration", "array", "iterator", "transducers"],
     "homepage": "https://github.com/camille\u002Dhdl/lazy\u002Dlists",
     "license": "MIT",
     "authors": [
@@ -13,11 +13,10 @@
         }
     ],
     "support": {
-        "docs": "https://camille\u002Dhdl.github.io/lazy\u002Dlists/",
+        "docs": "https://github.com/camille\u002Dhdl/lazy\u002Dlists/",
         "issues": "https://github.com/camille\u002Dhdl/lazy\u002Dlists/issues",
         "rss": "https://github.com/camille\u002Dhdl/lazy\u002Dlists/releases.atom",
-        "source": "https://github.com/camille\u002Dhdl/lazy\u002Dlists.git",
-        "wiki": "https://github.com/camille\u002Dhdl/lazy\u002Dlists/wiki"
+        "source": "https://github.com/camille\u002Dhdl/lazy\u002Dlists.git"
     },
     "require": {
         "php": "^7.2"
