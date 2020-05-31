@@ -18,4 +18,10 @@ class TakeTest extends TestCase
         $this->assertSame([1, 2, 3, 4], take(5, $list));
         $this->assertSame([], take(0, $list));
     }
+
+    public function testPassNoCollection()
+    {
+        $this->expectException(\Exception::class);
+        take(1, "invalidCollection");
+    }
 }

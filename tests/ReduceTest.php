@@ -18,4 +18,17 @@ class ReduceTest extends TestCase
         };
         $this->assertSame("-1-11", reduce($fn, "", $list));
     }
+    public function testPassNoCollection()
+    {
+        $this->expectException(\Exception::class);
+        reduce(function () {
+            return "";
+        }, "", 'invalidCollection');
+    }
+
+    public function testPassNonCallable()
+    {
+        $this->expectException(\TypeError::class);
+        reduce('notACallable', "", []);
+    }
 }

@@ -24,6 +24,7 @@ use LazyLists\Exception\InvalidArgumentException;
  * ```
  *
  * @param \LazyLists\Transducer\TransducerInterface[] ...$transducers
+ * @throws \LazyLists\Exception\InvalidArgumentException
  * @return callable
  */
 function pipe(...$transducers)

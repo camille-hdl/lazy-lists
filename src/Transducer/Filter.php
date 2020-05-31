@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace LazyLists\Transducer;
 
 /**
- *
+ * @see \LazyLists\filter
  */
 class Filter extends PureTransducer implements TransducerInterface
 {

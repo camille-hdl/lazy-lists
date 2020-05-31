@@ -33,23 +33,13 @@ class Take implements TransducerInterface
         int $numberOfItems
     ) {
         $this->numberOfItems = $numberOfItems;
-        $this->taken = [];
     }
 
     public function initialize(
         LazyIterator $iterator
     ) {
+        $this->taken = [];
         $this->iterator = $iterator;
-    }
-
-    public function isPure(): bool
-    {
-        return false;
-    }
-
-    public function getCurrentResult()
-    {
-        return $this->taken;
     }
 
     public function getEmptyFinalResult()

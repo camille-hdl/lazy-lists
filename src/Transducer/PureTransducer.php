@@ -33,15 +33,5 @@ abstract class PureTransducer
         $this->iterator = $iterator;
     }
 
-    public function isPure(): bool
-    {
-        return true;
-    }
-
-    public function getCurrentResult()
-    {
-        // no op
-    }
-
     abstract public function computeNextResult($item);
 }

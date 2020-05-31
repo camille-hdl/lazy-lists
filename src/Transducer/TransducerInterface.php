@@ -39,10 +39,6 @@ interface TransducerInterface
      */
     public function initialize(LazyIterator $iterator);
 
-    public function isPure(): bool;
-
-    public function getCurrentResult();
-
     public function computeNextResult($item);
 
     public function getEmptyFinalResult();

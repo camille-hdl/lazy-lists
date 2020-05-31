@@ -45,16 +45,6 @@ class Reduce implements TransducerInterface
         $this->iterator = $iterator;
     }
 
-    public function isPure(): bool
-    {
-        return false;
-    }
-
-    public function getCurrentResult()
-    {
-        return $this->reduction;
-    }
-
     public function getEmptyFinalResult()
     {
         return $this->initialReduction;

@@ -11,6 +11,9 @@ use function LazyLists\flatten;
 use function LazyLists\reduce;
 use function LazyLists\take;
 
+/**
+ * "integration" tests
+ */
 class PipeTest extends TestCase
 {
     public function test()

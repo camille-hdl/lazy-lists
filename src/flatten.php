@@ -33,7 +33,6 @@ function flatten(int $levels, $list = null)
     if ($levels <= 0 || !\is_array($list)) {
         return $list;
     }
-    InvalidArgumentException::assertCollection($list, __FUNCTION__, 2);
     $output = [];
     $flattenItem = static function ($item) use (&$output, $levels) {
         foreach ($item as $child) {
