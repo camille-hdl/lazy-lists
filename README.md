@@ -28,9 +28,42 @@ composer require camille-hdl/lazy-lists
 
 ## Documentation
 
-Check out the [documentation website][documentation] for detailed information
-and code examples.
+You can either use the functions directly on arrays or `Traversable`s
 
+```php
+use LazyLists\map;
+use LazyLists\filter;
+use LazyLists\reduce;
+use LazyLists\flatten;
+use LazyLists\take;
+
+$result = map($fn, $input);
+$result = filter($fn, $input);
+$result = reduce($fn, [], $input);
+$result = flatten(1, $input);
+$result = take(10, $input);
+```
+
+but the most interesting way of using LazyLists is to compose a "lazy pipeline".  
+Steps in the pipeline are executed sequentially *for each element* in the collection *in a single iteration*, unlike `array_map`, `array_filter` or other similar libraries.
+
+```php
+use LazyLists\pipe;
+use LazyLists\map;
+use LazyLists\filter;
+use LazyLists\reduce;
+use LazyLists\flatten;
+use LazyLists\take;
+
+$pipeline = pipe(
+    flatten(1),
+    filter($myPredicate),
+    map($myTransformation),
+    take(10),
+    reduce($myAggregator, 0)
+);
+$result = $pipeline($myArrayOrIterator);
+```
 
 ## Contributing
 
