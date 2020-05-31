@@ -30,6 +30,8 @@ class LazyIterator
     protected $computedFutureValues = [];
     protected $currentWorkingValue;
     protected $finalResultSoFar;
+    protected $shouldCompleteEarly = false;
+    protected $completedEarly = false;
 
     public function __construct($subject, array $transducers)
     {
@@ -40,6 +42,8 @@ class LazyIterator
     public function __invoke()
     {
         $this->initializeTransducers();
+        $this->shouldCompleteEarly = false;
+        $this->completedEarly = false;
         $this->iterator->rewind();
         if (!$this->iterator->valid()) {
             return $this->finalResultSoFar;
@@ -52,7 +56,7 @@ class LazyIterator
 
     protected function loop()
     {
-        while ($this->iterator->valid()) {
+        while ($this->iterator->valid() && !$this->completedEarly) {
             $currentTransducer = $this->getCurrentTransducer();
             $currentTransducer($this->currentWorkingValue);
         }
@@ -80,6 +84,9 @@ class LazyIterator
     protected function nextTransducer()
     {
         if (!isset($this->transducers[$this->currentTransducerIndex + 1])) {
+            if ($this->shouldCompleteEarly) {
+                $this->completedEarly = true;
+            }
             $this->updateFinalResult();
             $this->resetLoop();
         } else {
@@ -105,6 +112,11 @@ class LazyIterator
     public function skipToNextLoop()
     {
         $this->resetLoop();
+    }
+
+    public function completeEarly()
+    {
+        $this->shouldCompleteEarly = true;
     }
 
     protected function hasComputedValuesForIndex(int $index)

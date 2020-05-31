@@ -9,6 +9,7 @@ use function LazyLists\filter;
 use function LazyLists\pipe;
 use function LazyLists\flatten;
 use function LazyLists\reduce;
+use function LazyLists\take;
 
 class PipeTest extends TestCase
 {
@@ -82,5 +83,29 @@ class PipeTest extends TestCase
             reduce($sum, 0)
         );
         $this->assertEquals(93, $pipe($list));
+    }
+
+    public function testTake()
+    {
+        $list = [1, 2, 3, 4, 5];
+        $pipe = pipe(
+            take(2),
+        );
+        $this->assertSame([1, 2], $pipe($list));
+    }
+    public function testFlattenTakeMap()
+    {
+        $list = [
+            ["a", "b"],
+            ["c", "d"]
+        ];
+        $pipe = pipe(
+            flatten(1),
+            take(3),
+            map(static function ($v) {
+                return \strtoupper($v);
+            })
+        );
+        $this->assertSame(["A", "B", "C"], $pipe($list));
     }
 }

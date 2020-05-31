@@ -40,6 +40,7 @@
             "src/pipe.php",
             "src/filter.php",
             "src/reduce.php",
+            "src/take.php",
             "src/flatten.php"
         ]
     },
