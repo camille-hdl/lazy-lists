@@ -26,6 +26,7 @@ class LazyIterator
     protected $iterator;
     protected $transducers;
     protected $currentTransducerIndex;
+    protected $computedFutureValues = [];
     protected $intermediateResultSoFar;
     protected $finalResultSoFar;
 
@@ -58,6 +59,9 @@ class LazyIterator
 
     public function readNextItem()
     {
+        if (\count($this->computedFutureValues) > 0) {
+            return \array_shift($this->computedFutureValues);
+        }
         $this->iterator->next();
         if ($this->iterator->valid()) {
             return $this->iterator->current();
@@ -79,6 +83,14 @@ class LazyIterator
         }
     }
 
+    public function yieldToNextTransducerWithFutureValues(array $futureValues)
+    {
+        \array_unshift($this->computedFutureValues, ...$futureValues);
+        var_dump($this->computedFutureValues);
+        $this->intermediateResultSoFar = $futureValues;
+        $nextTransducer = $this->nextTransducer();
+    }
+
     public function yieldToNextTransducer($newIntermediateResultSoFar)
     {
         $this->intermediateResultSoFar = $newIntermediateResultSoFar;
@@ -92,6 +104,7 @@ class LazyIterator
 
     public function resetLoop()
     {
+        $this->computedFutureValues = [];
         $this->currentTransducerIndex = 0;
         $this->intermediateResultSoFar = $this->readNextItem();
     }

@@ -22,8 +22,10 @@ use LazyLists\LazyIterator;
 interface TransducerInterface
 {
     /**
-     * Cette fonction DOIT se terminer par un appel sur $iterator->yieldToNextTransducer()
-     * ou $iterator->skipToNextLoop
+     * Cette fonction DOIT se terminer par un appel sur soit
+     * * $iterator->yieldToNextTransducer
+     * * $iterator->yieldToNextTransducerWithFutureValues
+     * * $iterator->skipToNextLoop
      *
      * @param mixed $item
      * @return void

@@ -35,8 +35,11 @@
             "LazyLists\\": "src/"
         },
         "files": [
+            "src/isAssociativeArray.php",
             "src/map.php",
-            "src/pipe.php"
+            "src/pipe.php",
+            "src/filter.php",
+            "src/flatten.php"
         ]
     },
     "autoload-dev": {
