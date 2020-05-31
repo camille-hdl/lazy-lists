@@ -89,7 +89,7 @@ class PipeTest extends TestCase
     {
         $list = [1, 2, 3, 4, 5];
         $pipe = pipe(
-            take(2),
+            take(2)
         );
         $this->assertSame([1, 2], $pipe($list));
     }
