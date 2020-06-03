@@ -33,11 +33,25 @@ class Flatten extends PureTransducer implements TransducerInterface
         $this->levels = $levels;
     }
 
-    public static function flattenItem($levels, $item)
+    /**
+     * @param mixed $subject
+     * @return boolean
+     */
+    protected static function isPlainArray($subject): bool
+    {
+        return \is_array($subject) && !isAssociativeArray($subject);
+    }
+
+    /**
+     * @param integer $levels
+     * @param array|\Traversable $item
+     * @return array
+     */
+    public static function flattenItem(int $levels, $item): array
     {
         $output = [];
         foreach ($item as $child) {
-            if (\is_array($child) && $levels > 1) {
+            if (self::isPlainArray($child) && $levels > 1) {
                 $output = array_merge($output, self::flattenItem($levels - 1, $child));
             } else {
                 $output[] = $child;

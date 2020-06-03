@@ -24,5 +24,8 @@ class IsAssociativeArrayTest extends TestCase
         $this->assertFalse(isAssociativeArray([]));
         $this->assertFalse(isAssociativeArray([1, 2]));
         $this->assertFalse(isAssociativeArray([["" => ""]]));
+        $this->assertFalse(isAssociativeArray(true));
+        $this->assertFalse(isAssociativeArray(false));
+        $this->assertFalse(isAssociativeArray(new \stdClass()));
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LazyLists\Test;
 
+use LazyLists\Exception\InvalidArgumentException;
+
 use function LazyLists\map;
 use function LazyLists\filter;
 use function LazyLists\pipe;
@@ -130,5 +132,67 @@ class PipeTest extends TestCase
         $output = $pipe($directory);
         sort($output);
         $this->assertSame([1, 2, 3], $output);
+    }
+
+    public function testInvalidTransducers()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $pipe = pipe("notATransducer");
+    }
+
+    public function testRealUseCase()
+    {
+        $data1 = [
+            ["a" => 1],
+            ["a" => 11],
+            ["a" => 2],
+        ];
+        $data2 = [
+            ["a" => 22],
+            ["a" => 15],
+            ["a" => 3],
+        ];
+        $data3 = [
+            ["a" => 3],
+        ];
+        $input = new ArrayIteratorSpy([
+            \json_encode($data1),
+            \json_encode($data2),
+            \json_encode($data3),
+        ]);
+        $decode_count = 0;
+        $decode = function ($i) use (&$decode_count) {
+            $decode_count++;
+            return \json_decode($i, true);
+        };
+        $getA_count = 0;
+        $getA = function ($data) use (&$getA_count) {
+            $getA_count++;
+            return $data["a"];
+        };
+        $sup_count = 0;
+        $supOrEq10 = function ($a) use (&$sup_count) {
+            $sup_count++;
+            return $a >= 10;
+        };
+        $sum_count = 0;
+        $sum = function ($acc, $a) use (&$sum_count) {
+            $sum_count++;
+            return $acc + $a;
+        };
+        $expected = 48;
+        $pipe = pipe(
+            map($decode),
+            flatten(1),
+            map($getA),
+            filter($supOrEq10),
+            reduce($sum, 0)
+        );
+        $this->assertEquals($expected, $pipe($input));
+        $this->assertEquals(4, $input->howManyNexts, "We should iterate over the input only once");
+        $this->assertEquals(3, $decode_count);
+        $this->assertEquals(7, $getA_count);
+        $this->assertEquals(7, $sup_count);
+        $this->assertEquals(3, $sum_count);
     }
 }

@@ -26,6 +26,18 @@ class MapTest extends TestCase
         $this->assertSame(['k1val1', 'k2val2'], map($fn, $hashIterator));
     }
 
+    public function testNullValue()
+    {
+        $list = ['value', null, 'value'];
+        $identity = static function ($v) {
+            return $v;
+        };
+        $this->assertSame(
+            ['value', null, 'value'],
+            map($identity, $list)
+        );
+    }
+
     public function testPassNoCollection()
     {
         $this->expectException(\Exception::class);

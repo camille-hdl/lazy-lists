@@ -20,4 +20,28 @@ class MapTest extends TestCase
         $pipe2 = pipe($times2);
         $this->assertSame([2, 4, 6], $pipe2([1, 2, 3]));
     }
+    public function testNull()
+    {
+        $identity = map(static function ($v) {
+            return $v;
+        });
+        $pipe2 = pipe($identity);
+        $this->assertSame([1, null, 2], $pipe2([1, null, 2]));
+    }
+    public function testEmpty()
+    {
+        $identity = map(static function ($v) {
+            return $v;
+        });
+        $pipe2 = pipe($identity);
+        $this->assertNull($pipe2([]));
+    }
+    public function testOneValue()
+    {
+        $identity = map(static function ($v) {
+            return $v;
+        });
+        $pipe2 = pipe($identity);
+        $this->assertSame([null, 2], $pipe2([null, 2]));
+    }
 }
