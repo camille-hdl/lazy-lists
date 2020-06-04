@@ -37,6 +37,7 @@
             "src/isAssociativeArray.php",
             "src/map.php",
             "src/pipe.php",
+            "src/iterate.php",
             "src/filter.php",
             "src/reduce.php",
             "src/take.php",

@@ -40,7 +40,7 @@ class LazyWorker
     /**
      * @var int
      */
-    protected $currentTransducerIndex;
+    protected $currentTransducerIndex = 0;
     /**
      * @var mixed[]
      */
@@ -67,6 +67,14 @@ class LazyWorker
     protected $completedEarly = false;
 
     /**
+     * List of callables to be invoked whenever a new value
+     * is obtained
+     *
+     * @var array
+     */
+    protected $newValueCallbacks = [];
+
+    /**
      * @param array|\Iterator $subject
      * @param array $transducers
      */
@@ -86,10 +94,39 @@ class LazyWorker
      */
     public function __invoke()
     {
-        $this->initializeTransducers();
+        return $this->run();
+    }
+
+    /**
+     * $callback will be invoked whenever a new value is found:
+     * that is whenever a value is "outputted" by the pipeline.
+     * The $callback takes the value as single argument.
+     *
+     * @param callable $callback
+     * @return void
+     */
+    public function registerValueCallback(callable $callback)
+    {
+        $this->newValueCallbacks[] = $callback;
+    }
+
+    /**
+     * @return void
+     */
+    protected function reset()
+    {
+        $this->initializeTransducersAndLoop();
         $this->shouldCompleteEarly = false;
         $this->completedEarly = false;
         $this->iterator->rewind();
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function run()
+    {
+        $this->reset();
         if (!$this->iterator->valid()) {
             return $this->finalResultSoFar;
         }
@@ -111,6 +148,19 @@ class LazyWorker
     }
 
     /**
+     * Call callbacks whenever a new value is found
+     *
+     * @param mixed $value
+     * @return void
+     */
+    protected function onNewValue($value)
+    {
+        foreach ($this->newValueCallbacks as $callback) {
+            $callback($value);
+        }
+    }
+
+    /**
      * During iteration, provides the next item to be
      * processed, either from the wrapped Iterator or
      * from a value provided by an earlier transducer
@@ -121,9 +171,10 @@ class LazyWorker
     {
         $computedValuesInfo = $this->computedValuesToProcess();
         if (!\is_null($computedValuesInfo)) {
-            return $this->readComputedValueToProcessForIndex(
+            $computedValue = $this->readComputedValueToProcessForIndex(
                 $computedValuesInfo["index"]
             );
+            return $computedValue;
         }
         $this->iterator->next();
         if ($this->iterator->valid()) {
@@ -271,17 +322,15 @@ class LazyWorker
     }
 
     /**
-     * Starts a new loop in the transducers,
-     * and reads the next value to be processed.
-     *
-     * If the value is provided from a transducers (as opposed to
+     * Starts a new loop in the transducers.
+     * If there are values provided from transducers (as opposed to
      * the wrapped iterator), we don't start the loop from the
      * beginning but only from the Transducers downstream from the one
      * who provided the value.
      *
      * @return void
      */
-    protected function resetLoop()
+    protected function resetTransducers()
     {
         $computedValuesToProcess = $this->computedValuesToProcess();
         if (\is_null($computedValuesToProcess)) {
@@ -290,11 +339,27 @@ class LazyWorker
         } else {
             $this->currentTransducerIndex = $computedValuesToProcess["index"];
         }
+    }
+
+    /**
+     * Starts a new loop in the transducers,
+     * and reads the next value to be processed.
+     *
+     * @return void
+     */
+    protected function resetLoop()
+    {
+        $this->resetTransducers();
         $this->currentWorkingValue = $this->readNextItem();
     }
 
     /**
-     * Undocumented function
+     * This reads and returns all "future" values :
+     * the values that a transducer upstream made available to be processed.
+     * This is used in case we need to finish processing while some values
+     * haven't been processed by another transducer and thus incorporated in the
+     * final result.
+     * Typically: when `flatten()` is the last transducer in the pipeline.
      *
      * @param integer $fromIndex
      * @return array
@@ -331,6 +396,7 @@ class LazyWorker
     protected function updateFinalResult()
     {
         $lastTransducer = $this->getLastTransducer();
+        $this->onNewValue($this->currentWorkingValue);
         $this->finalResultSoFar = $lastTransducer->computeFinalResult(
             $this->finalResultSoFar,
             $this->currentWorkingValue
@@ -342,6 +408,7 @@ class LazyWorker
         foreach (
             $this->readAllFutureComputedValues($this->currentTransducerIndex) as $value
         ) {
+            $this->onNewValue($value);
             $this->finalResultSoFar = $lastTransducer->computeFinalResult(
                 $this->finalResultSoFar,
                 $value
@@ -352,9 +419,17 @@ class LazyWorker
     /**
      * @return void
      */
-    protected function initializeTransducers()
+    protected function initializeTransducersAndLoop()
     {
         $this->resetLoop();
+        $this->initializeTransducers();
+    }
+
+    /**
+     * @return void
+     */
+    protected function initializeTransducers()
+    {
         foreach ($this->transducers as $transducer) {
             $transducer->initialize($this);
         }
