@@ -14,19 +14,16 @@ declare(strict_types=1);
 
 namespace LazyLists\Transducer;
 
-use LazyLists\LazyIterator;
+use LazyLists\LazyWorker;
 
-/**
- *
- */
 interface TransducerInterface
 {
     /**
      * This function should make use of:
-     * * $iterator->yieldToNextTransducer
-     * * $iterator->yieldToNextTransducerWithFutureValues
-     * * $iterator->skipToNextLoop
-     * * $iterator->completeEarly
+     * * $worker->yieldToNextTransducer
+     * * $worker->yieldToNextTransducerWithFutureValues
+     * * $worker->skipToNextLoop
+     * * $worker->completeEarly
      *
      * @param mixed $item
      * @return void
@@ -34,10 +31,10 @@ interface TransducerInterface
     public function __invoke($item);
 
     /**
-     * @param LazyIterator $iterator
+     * @param LazyWorker $worker
      * @return void
      */
-    public function initialize(LazyIterator $iterator);
+    public function initialize(LazyWorker $worker);
 
     public function computeNextResult($item);
 

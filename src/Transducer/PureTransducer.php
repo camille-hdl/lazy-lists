@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace LazyLists\Transducer;
 
-use LazyLists\LazyIterator;
+use LazyLists\LazyWorker;
 
 /**
  * Models a simple transducer that maintains no internal state.
@@ -22,15 +22,15 @@ use LazyLists\LazyIterator;
  */
 abstract class PureTransducer
 {
-    protected $iterator;
+    protected $worker;
     public function __invoke($item)
     {
         $this->computeNextResult($item);
     }
 
-    public function initialize(LazyIterator $iterator)
+    public function initialize(LazyWorker $worker)
     {
-        $this->iterator = $iterator;
+        $this->worker = $worker;
     }
 
     abstract public function computeNextResult($item);

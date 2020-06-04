@@ -32,7 +32,7 @@ class Each extends PureTransducer implements TransducerInterface
     {
         $sideEffect = $this->sideEffect;
         $sideEffect($item);
-        $this->iterator->yieldToNextTransducer($item);
+        $this->worker->yieldToNextTransducer($item);
     }
 
     public function getEmptyFinalResult()

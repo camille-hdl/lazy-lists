@@ -35,10 +35,10 @@ class Until extends PureTransducer implements TransducerInterface
     {
         $condition = $this->condition;
         if ($condition($item)) {
-            $this->iterator->completeEarly();
-            $this->iterator->skipToNextLoop();
+            $this->worker->completeEarly();
+            $this->worker->skipToNextLoop();
         } else {
-            $this->iterator->yieldToNextTransducer($item);
+            $this->worker->yieldToNextTransducer($item);
         }
     }
 

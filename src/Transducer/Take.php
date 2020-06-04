@@ -14,14 +14,14 @@ declare(strict_types=1);
 
 namespace LazyLists\Transducer;
 
-use LazyLists\LazyIterator;
+use LazyLists\LazyWorker;
 
 /**
  *
  */
 class Take implements TransducerInterface
 {
-    protected $iterator;
+    protected $worker;
     protected $taken;
     protected $numberOfItems;
     public function __invoke($item)
@@ -36,10 +36,10 @@ class Take implements TransducerInterface
     }
 
     public function initialize(
-        LazyIterator $iterator
+        LazyWorker $worker
     ) {
         $this->taken = [];
-        $this->iterator = $iterator;
+        $this->worker = $worker;
     }
 
     public function getEmptyFinalResult()
@@ -50,10 +50,10 @@ class Take implements TransducerInterface
     public function computeNextResult($item)
     {
         if (\count($this->taken) >= $this->numberOfItems - 1) {
-            $this->iterator->completeEarly();
+            $this->worker->completeEarly();
         }
         $this->taken[] = $item;
-        $this->iterator->yieldToNextTransducer($item);
+        $this->worker->yieldToNextTransducer($item);
     }
 
     public function computeFinalResult($previousResult, $lastValue)

@@ -31,7 +31,7 @@ function pipe(...$transducers)
 {
     InvalidArgumentException::assertTransducers($transducers, __FUNCTION__);
     return function ($subject) use ($transducers) {
-        $lazyIterator = new LazyIterator($subject, $transducers);
-        return $lazyIterator();
+        $LazyWorker = new LazyWorker($subject, $transducers);
+        return $LazyWorker();
     };
 }

@@ -35,9 +35,9 @@ class Filter extends PureTransducer implements TransducerInterface
     {
         $predicate = $this->predicate;
         if ($predicate($item)) {
-            $this->iterator->yieldToNextTransducer($item);
+            $this->worker->yieldToNextTransducer($item);
         } else {
-            $this->iterator->skipToNextLoop();
+            $this->worker->skipToNextLoop();
         }
     }
 

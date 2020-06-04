@@ -21,13 +21,13 @@ use function LazyLists\filter;
 
 /**
  * Wraps an Iterator and orchestrates the Transducers
- * Transducers can iteract with the LazyIterator through its
+ * Transducers can iteract with the LazyWorker through its
  * public methods.
  *
  * This class can be instanciated by `LazyLists\pipe()`
  * @see \LazyLists\pipe
  */
-class LazyIterator
+class LazyWorker
 {
     /**
      * @var \Iterator

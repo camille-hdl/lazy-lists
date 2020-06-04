@@ -63,15 +63,15 @@ class Flatten extends PureTransducer implements TransducerInterface
     public function computeNextResult($item)
     {
         if (!\is_array($item)) {
-            $this->iterator->yieldToNextTransducer($item);
+            $this->worker->yieldToNextTransducer($item);
             return;
         }
         if (isAssociativeArray($item)) {
-            $this->iterator->yieldToNextTransducer($item);
+            $this->worker->yieldToNextTransducer($item);
             return;
         }
         $flattened = self::flattenItem($this->levels, $item);
-        $this->iterator->yieldToNextTransducerWithFutureValues($flattened);
+        $this->worker->yieldToNextTransducerWithFutureValues($flattened);
     }
 
     public function getEmptyFinalResult()

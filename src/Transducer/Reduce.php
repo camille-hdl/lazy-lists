@@ -14,14 +14,14 @@ declare(strict_types=1);
 
 namespace LazyLists\Transducer;
 
-use LazyLists\LazyIterator;
+use LazyLists\LazyWorker;
 
 /**
  *
  */
 class Reduce implements TransducerInterface
 {
-    protected $iterator;
+    protected $worker;
     protected $accumulator;
     protected $initialReduction;
     protected $reduction;
@@ -40,9 +40,9 @@ class Reduce implements TransducerInterface
     }
 
     public function initialize(
-        LazyIterator $iterator
+        LazyWorker $worker
     ) {
-        $this->iterator = $iterator;
+        $this->worker = $worker;
     }
 
     public function getEmptyFinalResult()
@@ -54,7 +54,7 @@ class Reduce implements TransducerInterface
     {
         $accumulator = $this->accumulator;
         $this->reduction = $accumulator($this->reduction, $item);
-        $this->iterator->yieldToNextTransducer($this->reduction);
+        $this->worker->yieldToNextTransducer($this->reduction);
     }
 
     public function computeFinalResult($previousResult, $lastValue)
