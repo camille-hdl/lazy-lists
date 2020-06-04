@@ -12,6 +12,8 @@ use function LazyLists\pipe;
 use function LazyLists\flatten;
 use function LazyLists\reduce;
 use function LazyLists\take;
+use function LazyLists\each;
+use function LazyLists\until;
 
 /**
  * "integration" tests
@@ -194,5 +196,24 @@ class PipeTest extends TestCase
         $this->assertEquals(7, $getA_count);
         $this->assertEquals(7, $sup_count);
         $this->assertEquals(3, $sum_count);
+    }
+
+    public function testFlattenEachUntil()
+    {
+        $list = [
+            [1, 2],
+            [3, 4]
+        ];
+        $c = 0;
+        $pipe = pipe(
+            flatten(1),
+            each(function ($v) use (&$c) {
+                $c = $c + $v;
+            }),
+            until(function ($v) use (&$c) {
+                return $c > 6;
+            })
+        );
+        $this->assertSame([1, 2, 3], $pipe($list));
     }
 }

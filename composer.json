@@ -41,6 +41,7 @@
             "src/reduce.php",
             "src/take.php",
             "src/flatten.php",
+            "src/each.php",
             "src/until.php"
         ]
     },
