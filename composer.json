@@ -24,6 +24,7 @@
     "require-dev": {
         "jakub-onderka/php-parallel-lint": "^1",
         "mockery/mockery": "^1",
+        "phpbench/phpbench": "^0.17.1",
         "phpstan/phpstan": "^0.11",
         "phpstan/phpstan-mockery": "^0.11",
         "phpunit/phpunit": "^8",
@@ -58,6 +59,11 @@
         "phpstan": [
             "phpstan analyse src -c phpstan.neon --level max --no-progress --memory-limit=256M",
             "phpstan analyse tests -c phpstan.neon --level 4 --no-progress --memory-limit=256M"
+        ],
+        "phpbench": [
+            "phpbench run benchmarks/MapBench.php --report=aggregate",
+            "phpbench run benchmarks/PipeFilterMapReduceBench.php --report=aggregate",
+            "phpbench run benchmarks/PipeMapFilterTakeBench.php --report=aggregate"
         ],
         "phpunit": "phpunit --verbose --colors=always",
         "phpunit-ci": "phpunit --verbose --coverage-clover build/logs/clover.xml",
