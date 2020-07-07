@@ -51,11 +51,11 @@ composer require camille-hdl/lazy-lists
 You can use the functions directly on arrays or `Traversable`s
 
 ```php
-use LazyLists\map;
-use LazyLists\filter;
-use LazyLists\reduce;
-use LazyLists\flatten;
-use LazyLists\take;
+use function LazyLists\map;
+use function LazyLists\filter;
+use function LazyLists\reduce;
+use function LazyLists\flatten;
+use function LazyLists\take;
 
 $result = map($fn, $input);
 $result = filter($fn, $input);
@@ -68,15 +68,15 @@ but the most interesting way of using LazyLists is to use the composition functi
 Steps in the pipeline are executed sequentially *for each element* in the collection *in a single iteration*, unlike `array_map`, `array_filter` or other similar libraries.
 
 ```php
-use LazyLists\pipe;
-use LazyLists\iterate;
-use LazyLists\map;
-use LazyLists\filter;
-use LazyLists\reduce;
-use LazyLists\each;
-use LazyLists\flatten;
-use LazyLists\take;
-use LazyLists\until;
+use function LazyLists\pipe;
+use function LazyLists\iterate;
+use function LazyLists\map;
+use function LazyLists\filter;
+use function LazyLists\reduce;
+use function LazyLists\each;
+use function LazyLists\flatten;
+use function LazyLists\take;
+use function LazyLists\until;
 
 /**
  * Compose steps together into a single function
