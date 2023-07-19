@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace LazyLists;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 /**
  * Calls `$sideEffect` on each element in `$list`.
  * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
@@ -31,8 +29,6 @@ function each(callable $sideEffect, array|\Traversable|null $list = null): null|
     if (\is_null($list)) {
         return new \LazyLists\Transducer\Each($sideEffect);
     }
-
-    InvalidArgumentException::assertCollection($list, __FUNCTION__, 2);
     foreach ($list as $key => $item) {
         $sideEffect($item, $key);
     }

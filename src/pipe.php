@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace LazyLists;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 /**
  * Combines Transducers to create a single "pipeline" function.
  * ```php
@@ -24,12 +22,10 @@ use LazyLists\Exception\InvalidArgumentException;
  * ```
  *
  * @param \LazyLists\Transducer\TransducerInterface[] ...$transducers
- * @throws \LazyLists\Exception\InvalidArgumentException
  * @return callable
  */
 function pipe(\LazyLists\Transducer\TransducerInterface ...$transducers)
 {
-    InvalidArgumentException::assertTransducers($transducers, __FUNCTION__);
     return function ($subject) use ($transducers) {
         $LazyWorker = new LazyWorker($subject, $transducers);
         return $LazyWorker();

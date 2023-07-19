@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LazyLists\Test;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 use function LazyLists\map;
 use function LazyLists\filter;
 use function LazyLists\pipe;

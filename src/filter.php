@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace LazyLists;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 /**
  * Returns an array containing the elements of `$list` for which
  * `$predicate` returns truthy.
@@ -31,8 +29,6 @@ function filter(callable $predicate, array|\Traversable|null $list = null): arra
     if (\is_null($list)) {
         return new \LazyLists\Transducer\Filter($predicate);
     }
-
-    InvalidArgumentException::assertCollection($list, __FUNCTION__, 2);
     $output = [];
     foreach ($list as $key => $item) {
         if ($predicate($item, $key)) {

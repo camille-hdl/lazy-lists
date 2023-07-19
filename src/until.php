@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace LazyLists;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 /**
  * Returns an array containing the elements of `$list` up to
  * an element for which $condition returns true (excluding this element).
@@ -31,8 +29,6 @@ function until(callable $condition, \Traversable|array|null $list = null): array
     if (\is_null($list)) {
         return new \LazyLists\Transducer\Until($condition);
     }
-
-    InvalidArgumentException::assertCollection($list, __FUNCTION__, 2);
     $output = [];
     foreach ($list as $key => $item) {
         if ($condition($item, $key)) {

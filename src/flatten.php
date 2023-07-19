@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace LazyLists;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 /**
  * Flattens nested arrays $levels deep. Ignores associative arrays.
  * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
