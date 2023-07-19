@@ -38,9 +38,6 @@ jobs:
         id: run-tests
         run: composer run test-ci
 
-      - name: Upload coverage to Coveralls
+      - name: Coveralls
         if: steps.run-tests.outcome == 'success' && steps.run-tests.conclusion == 'success'
-        run: php vendor/bin/php-coveralls -v
-        continue-on-error: true
-        env:
-          COVERALLS_RUN_LOCALLY: 1
+        uses: coverallsapp/github-action@v2
