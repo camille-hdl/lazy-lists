@@ -1,0 +1,46 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - '!*' # Do not execute on tags
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [8.1]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '${{ matrix.php-versions }}'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, bcmath, intl, iconv
+          coverage: xdebug
+          tools: 'cs2pr, php-cs-fixer, phpstan, phpunit'
+ 
+      - name: Create build dir
+        run: mkdir -p build/logs
+
+      - name: Install php-coveralls
+        run: composer require -n --no-update php-coveralls/php-coveralls:^2.0
+
+      - name: Run composer install
+        run: composer install -n --prefer-dist --no-progress --no-suggest
+
+      - name: Run tests
+        id: run-tests
+        run: composer run test-ci
+
+      - name: Upload coverage to Coveralls
+        if: steps.run-tests.outcome == 'success' && steps.run-tests.conclusion == 'success'
+        run: php vendor/bin/php-coveralls -v
+        continue-on-error: true
+        env:
+          COVERALLS_RUN_LOCALLY: 1
