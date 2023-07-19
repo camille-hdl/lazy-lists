@@ -21,9 +21,12 @@ use LazyLists\LazyWorker;
  */
 class Take implements TransducerInterface
 {
-    protected $worker;
-    protected $taken;
-    protected $numberOfItems;
+    protected ?LazyWorker $worker = null;
+    /**
+     * @var array<mixed>
+     */
+    protected array $taken = [];
+    protected int $numberOfItems;
     public function __invoke($item)
     {
         $this->computeNextResult($item);
@@ -37,26 +40,26 @@ class Take implements TransducerInterface
 
     public function initialize(
         LazyWorker $worker
-    ) {
+    ): void {
         $this->taken = [];
         $this->worker = $worker;
     }
 
-    public function getEmptyFinalResult()
+    public function getEmptyFinalResult(): mixed
     {
         return $this->taken;
     }
 
-    public function computeNextResult($item)
+    public function computeNextResult(mixed $item): void
     {
         if (\count($this->taken) >= $this->numberOfItems - 1) {
-            $this->worker->completeEarly();
+            $this->worker?->completeEarly();
         }
         $this->taken[] = $item;
-        $this->worker->yieldToNextTransducer($item);
+        $this->worker?->yieldToNextTransducer($item);
     }
 
-    public function computeFinalResult($previousResult, $lastValue)
+    public function computeFinalResult(mixed $previousResult, mixed $lastValue): mixed
     {
         return $this->taken;
     }

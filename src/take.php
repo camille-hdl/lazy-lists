@@ -14,24 +14,21 @@ declare(strict_types=1);
 
 namespace LazyLists;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 /**
  * Returns an array with the $numberOfItems first elements from $list.
  * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
  *
- * @param integer $numberOfItems
- * @param array|\Traversable|null $list
  * @see \LazyLists\Transducer\Take
- * @return mixed array or \LazyLists\Transducer\Take
+ * @template InputType
+ * @param integer $numberOfItems
+ * @param array<InputType>|\Traversable<InputType>|null $list
+ * @return ($list is null ? \LazyLists\Transducer\Take : array<InputType>)
  */
-function take(int $numberOfItems, $list = null)
+function take(int $numberOfItems, array|\Traversable|null $list = null): array|\LazyLists\Transducer\Take
 {
     if (\is_null($list)) {
         return new \LazyLists\Transducer\Take($numberOfItems);
     }
-
-    InvalidArgumentException::assertCollection($list, __FUNCTION__, 2);
     $output = [];
     foreach ($list as $item) {
         if (\count($output) < $numberOfItems) {

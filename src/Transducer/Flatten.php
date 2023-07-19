@@ -16,9 +16,6 @@ namespace LazyLists\Transducer;
 
 use function LazyLists\isAssociativeArray;
 
-/**
- *
- */
 class Flatten extends PureTransducer implements TransducerInterface
 {
     /**
@@ -36,6 +33,7 @@ class Flatten extends PureTransducer implements TransducerInterface
     /**
      * @param mixed $subject
      * @return boolean
+     * @phpstan-assert array<mixed> $subject
      */
     protected static function isPlainArray($subject): bool
     {
@@ -44,15 +42,15 @@ class Flatten extends PureTransducer implements TransducerInterface
 
     /**
      * @param integer $levels
-     * @param array|\Traversable $item
-     * @return array
+     * @param array<mixed>|\Traversable<mixed> $item
+     * @return array<mixed>
      */
-    public static function flattenItem(int $levels, $item): array
+    public static function flattenItem(int $levels, array|\Traversable $item): array
     {
         $output = [];
         foreach ($item as $child) {
-            if (self::isPlainArray($child) && $levels > 1) {
-                $output = array_merge($output, self::flattenItem($levels - 1, $child));
+            if (((\is_array($child) && self::isPlainArray($child)) || $child instanceof \Traversable) && $levels > 1) {
+                $output = \array_merge($output, self::flattenItem($levels - 1, $child));
             } else {
                 $output[] = $child;
             }
@@ -60,31 +58,34 @@ class Flatten extends PureTransducer implements TransducerInterface
         return $output;
     }
 
-    public function computeNextResult($item)
+    public function computeNextResult(mixed $item): void
     {
         if (!\is_array($item)) {
-            $this->worker->yieldToNextTransducer($item);
+            $this->worker?->yieldToNextTransducer($item);
             return;
         }
         if (isAssociativeArray($item)) {
-            $this->worker->yieldToNextTransducer($item);
+            $this->worker?->yieldToNextTransducer($item);
             return;
         }
         $flattened = self::flattenItem($this->levels, $item);
-        $this->worker->yieldToNextTransducerWithFutureValues($flattened);
+        $this->worker?->yieldToNextTransducerWithFutureValues($flattened);
     }
 
-    public function getEmptyFinalResult()
+    public function getEmptyFinalResult(): mixed
     {
         return [];
     }
 
-    public function computeFinalResult($previousResult, $lastValue)
+    public function computeFinalResult(mixed $previousResult, mixed $lastValue): mixed
     {
         if (\is_null($previousResult)) {
             return [];
         }
-        $previousResult[] = $lastValue;
-        return $previousResult;
+        if ($previousResult instanceof \ArrayAccess || \is_array($previousResult)) {
+            $previousResult[] = $lastValue;
+            return $previousResult;
+        }
+        throw new \LogicException('Cannot use Flatten transducer on a non-array, non-ArrayAccess result');
     }
 }

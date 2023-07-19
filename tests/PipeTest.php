@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LazyLists\Test;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 use function LazyLists\map;
 use function LazyLists\filter;
 use function LazyLists\pipe;
@@ -138,7 +136,7 @@ class PipeTest extends TestCase
 
     public function testInvalidTransducers()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\TypeError::class);
         $pipe = pipe("notATransducer");
     }
 

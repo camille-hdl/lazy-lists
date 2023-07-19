@@ -40,7 +40,7 @@ class MapTest extends TestCase
 
     public function testPassNoCollection()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\TypeError::class);
         map(function () {
             return "";
         }, 'invalidCollection');

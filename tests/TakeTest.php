@@ -21,7 +21,7 @@ class TakeTest extends TestCase
 
     public function testPassNoCollection()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\TypeError::class);
         take(1, "invalidCollection");
     }
 }

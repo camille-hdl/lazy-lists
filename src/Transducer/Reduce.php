@@ -16,15 +16,15 @@ namespace LazyLists\Transducer;
 
 use LazyLists\LazyWorker;
 
-/**
- *
- */
 class Reduce implements TransducerInterface
 {
-    protected $worker;
+    protected ?LazyWorker $worker = null;
+    /**
+     * @var callable
+     */
     protected $accumulator;
-    protected $initialReduction;
-    protected $reduction;
+    protected mixed $initialReduction;
+    protected mixed $reduction;
     public function __invoke($item)
     {
         $this->computeNextResult($item);
@@ -32,7 +32,7 @@ class Reduce implements TransducerInterface
 
     public function __construct(
         callable $accumulator,
-        $initialReduction
+        mixed $initialReduction
     ) {
         $this->accumulator = $accumulator;
         $this->initialReduction = $initialReduction;
@@ -41,23 +41,23 @@ class Reduce implements TransducerInterface
 
     public function initialize(
         LazyWorker $worker
-    ) {
+    ): void {
         $this->worker = $worker;
     }
 
-    public function getEmptyFinalResult()
+    public function getEmptyFinalResult(): mixed
     {
         return $this->initialReduction;
     }
 
-    public function computeNextResult($item)
+    public function computeNextResult(mixed $item): void
     {
         $accumulator = $this->accumulator;
         $this->reduction = $accumulator($this->reduction, $item);
-        $this->worker->yieldToNextTransducer($this->reduction);
+        $this->worker?->yieldToNextTransducer($this->reduction);
     }
 
-    public function computeFinalResult($previousResult, $lastValue)
+    public function computeFinalResult(mixed $previousResult, mixed $lastValue): mixed
     {
         return $lastValue;
     }

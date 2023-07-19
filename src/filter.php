@@ -14,24 +14,21 @@ declare(strict_types=1);
 
 namespace LazyLists;
 
-use LazyLists\Exception\InvalidArgumentException;
-
 /**
  * Returns an array containing the elements of `$list` for which
  * `$predicate` returns truthy.
  * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
  *
- * @param callable $predicate
- * @param array|\Traversable|null $list
- * @return mixed array or \LazyLists\Transducer\Filter
+ * @template InputType
+ * @param callable(InputType, mixed|null): bool $predicate
+ * @param array<InputType>|\Traversable<InputType>|null $list
+ * @return ($list is null ? \LazyLists\Transducer\Filter : array<InputType>)
  */
-function filter(callable $predicate, $list = null)
+function filter(callable $predicate, array|\Traversable|null $list = null): array|\LazyLists\Transducer\Filter
 {
     if (\is_null($list)) {
         return new \LazyLists\Transducer\Filter($predicate);
     }
-
-    InvalidArgumentException::assertCollection($list, __FUNCTION__, 2);
     $output = [];
     foreach ($list as $key => $item) {
         if ($predicate($item, $key)) {

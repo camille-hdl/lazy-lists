@@ -22,7 +22,7 @@ class FilterTest extends TestCase
 
     public function testPassNoCollection()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\TypeError::class);
         filter(function () {
             return "";
         }, 'invalidCollection');

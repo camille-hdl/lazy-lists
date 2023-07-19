@@ -1,0 +1,43 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - '!*' # Do not execute on tags
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [8.1]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '${{ matrix.php-versions }}'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, bcmath, intl, iconv
+          coverage: xdebug
+          tools: 'cs2pr, php-cs-fixer, phpstan, phpunit'
+ 
+      - name: Create build dir
+        run: mkdir -p build/logs
+
+      - name: Run composer install
+        run: composer install -n --prefer-dist --no-progress --no-suggest
+
+      - name: Run tests
+        id: run-tests
+        run: composer run test-ci
+
+      - name: Upload coverage results to Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          composer global require php-coveralls/php-coveralls
+          php-coveralls --coverage_clover=build/logs/clover.xml -v

@@ -28,17 +28,17 @@ interface TransducerInterface
      * @param mixed $item
      * @return void
      */
-    public function __invoke($item);
+    public function __invoke(mixed $item);
 
     /**
      * @param LazyWorker $worker
      * @return void
      */
-    public function initialize(LazyWorker $worker);
+    public function initialize(LazyWorker $worker): void;
 
-    public function computeNextResult($item);
+    public function computeNextResult(mixed $item): void;
 
-    public function getEmptyFinalResult();
+    public function getEmptyFinalResult(): mixed;
 
-    public function computeFinalResult($previousResult, $lastValue);
+    public function computeFinalResult(mixed $previousResult, mixed $lastValue): mixed;
 }
