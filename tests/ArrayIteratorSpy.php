@@ -12,7 +12,7 @@ use ArrayIterator;
 class ArrayIteratorSpy extends ArrayIterator
 {
     public $howManyNexts = 0;
-    public function next()
+    public function next(): void
     {
         $this->howManyNexts++;
         parent::next();

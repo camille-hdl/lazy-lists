@@ -22,8 +22,12 @@ final class InvalidArgumentException extends \InvalidArgumentException
      * @param  integer $parameterPosition
      * @throws InvalidArgumentException
      */
-    private static function assertCollectionAlike(mixed $collection, string $className, string $callee, int $parameterPosition): void
-    {
+    private static function assertCollectionAlike(
+        mixed $collection,
+        string $className,
+        string $callee,
+        int $parameterPosition
+    ): void {
         if (!\is_array($collection) && !$collection instanceof $className) {
             throw new static(
                 \sprintf(
