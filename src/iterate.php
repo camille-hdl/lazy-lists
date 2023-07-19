@@ -27,7 +27,7 @@ use LazyLists\Exception\InvalidArgumentException;
  * @throws \LazyLists\Exception\InvalidArgumentException
  * @return callable
  */
-function iterate(...$transducers)
+function iterate(\LazyLists\Transducer\TransducerInterface ...$transducers)
 {
     InvalidArgumentException::assertTransducers($transducers, __FUNCTION__);
     return function ($subject) use ($transducers) {

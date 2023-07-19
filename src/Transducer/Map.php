@@ -32,23 +32,26 @@ class Map extends PureTransducer implements TransducerInterface
         $this->procedure = $procedure;
     }
 
-    public function computeNextResult($item)
+    public function computeNextResult(mixed $item): void
     {
         $procedure = $this->procedure;
-        $this->worker->yieldToNextTransducer($procedure($item));
+        $this->worker?->yieldToNextTransducer($procedure($item));
     }
 
-    public function getEmptyFinalResult()
+    public function getEmptyFinalResult(): mixed
     {
         return [];
     }
 
-    public function computeFinalResult($previousResult, $lastValue)
+    public function computeFinalResult(mixed $previousResult, mixed $lastValue): mixed
     {
         if (\is_null($previousResult)) {
             return [];
         }
-        $previousResult[] = $lastValue;
-        return $previousResult;
+        if ($previousResult instanceof \ArrayAccess || \is_array($previousResult)) {
+            $previousResult[] = $lastValue;
+            return $previousResult;
+        }
+        throw new \LogicException('Cannot use Map transducer on a non-array, non-ArrayAccess result');
     }
 }

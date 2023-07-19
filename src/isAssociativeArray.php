@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace LazyLists;
 
-function isAssociativeArray($subject): bool
+function isAssociativeArray(mixed $subject): bool
 {
     if (!\is_array($subject)) {
         return false;

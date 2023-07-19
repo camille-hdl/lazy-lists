@@ -8,9 +8,9 @@
 
 namespace LazyLists\Exception;
 
-class InvalidArgumentException extends \InvalidArgumentException
+final class InvalidArgumentException extends \InvalidArgumentException
 {
-    public static function assertCollection($collection, $callee, $parameterPosition)
+    public static function assertCollection(mixed $collection, string $callee, int $parameterPosition = 1): void
     {
         self::assertCollectionAlike($collection, 'Traversable', $callee, $parameterPosition);
     }
@@ -22,7 +22,7 @@ class InvalidArgumentException extends \InvalidArgumentException
      * @param  integer $parameterPosition
      * @throws InvalidArgumentException
      */
-    private static function assertCollectionAlike($collection, $className, $callee, $parameterPosition)
+    private static function assertCollectionAlike(mixed $collection, string $className, string $callee, int $parameterPosition): void
     {
         if (!\is_array($collection) && !$collection instanceof $className) {
             throw new static(
@@ -37,22 +37,22 @@ class InvalidArgumentException extends \InvalidArgumentException
         }
     }
 
-    /**
-     * @param  mixed $value
-     * @return string
-     */
-    private static function getType($value): string
+    private static function getType(mixed $value): string
     {
         return \is_object($value) ? \get_class($value) : \gettype($value);
     }
 
-    public static function assertTransducers(array $candidates, $callee)
+    /**
+     * @param array<mixed> $candidates
+     * @param string $callee
+     */
+    public static function assertTransducers(array $candidates, string $callee): void
     {
         foreach ($candidates as $candidate) {
             self::assertTransducer($candidate, $callee);
         }
     }
-    public static function assertTransducer($candidate, $callee)
+    public static function assertTransducer(mixed $candidate, string $callee): void
     {
         if (!$candidate instanceof \LazyLists\Transducer\TransducerInterface) {
             throw new static(

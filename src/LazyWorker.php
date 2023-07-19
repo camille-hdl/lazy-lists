@@ -70,15 +70,15 @@ class LazyWorker
      * List of callables to be invoked whenever a new value
      * is obtained
      *
-     * @var array
+     * @var array<callable>
      */
     protected $newValueCallbacks = [];
 
     /**
-     * @param array|\Iterator $subject
-     * @param array $transducers
+     * @param array<mixed>|\Iterator<mixed> $subject
+     * @param \LazyLists\Transducer\TransducerInterface[] $transducers
      */
-    public function __construct($subject, array $transducers)
+    public function __construct(array|\Iterator $subject, array $transducers)
     {
         if (\count($transducers) <= 0) {
             throw new \LogicException(
@@ -131,7 +131,7 @@ class LazyWorker
             return $this->finalResultSoFar;
         }
         $this->currentWorkingValue = $this->iterator->current();
-        $this->finalResultSoFar = $this->getLastTransducer()->getEmptyFinalResult();
+        $this->finalResultSoFar = $this->getLastTransducer()?->getEmptyFinalResult();
         $this->loop();
         return $this->finalResultSoFar;
     }
@@ -170,9 +170,9 @@ class LazyWorker
     public function readNextItem()
     {
         $computedValuesInfo = $this->computedValuesToProcess();
-        if (!\is_null($computedValuesInfo)) {
+        if (!\is_null($computedValuesInfo) && is_array($computedValuesInfo) && isset($computedValuesInfo["index"])) {
             $computedValue = $this->readComputedValueToProcessForIndex(
-                $computedValuesInfo["index"]
+                (int)$computedValuesInfo["index"]
             );
             return $computedValue;
         }
@@ -201,7 +201,7 @@ class LazyWorker
      * by the Transducers downstream, it can call this method.
      * For example : `Flatten`
      *
-     * @param array $futureValues
+     * @param array<mixed> $futureValues
      * @see \LazyLists\Transducer\Flatten
      * @return void
      */
@@ -280,7 +280,7 @@ class LazyWorker
      */
     protected function hasComputedValuesForIndex(int $index)
     {
-        return isset($this->computedFutureValues[$index]) &&
+        return isset($this->computedFutureValues[$index]) && \is_array($this->computedFutureValues[$index]) &&
             \count($this->computedFutureValues[$index]) > 0;
     }
 
@@ -292,7 +292,7 @@ class LazyWorker
     protected function readComputedValueToProcessForIndex(int $index)
     {
         if (
-            isset($this->computedFutureValues[$index]) &&
+            isset($this->computedFutureValues[$index]) && \is_array($this->computedFutureValues[$index]) &&
             \count($this->computedFutureValues[$index]) > 0
         ) {
             return \array_shift($this->computedFutureValues[$index]);
@@ -336,8 +336,10 @@ class LazyWorker
         if (\is_null($computedValuesToProcess)) {
             $this->computedFutureValues = [];
             $this->currentTransducerIndex = 0;
-        } else {
-            $this->currentTransducerIndex = $computedValuesToProcess["index"];
+        } elseif (\is_array($computedValuesToProcess) && isset($computedValuesToProcess["index"])) {
+            if (\is_numeric($computedValuesToProcess["index"])) {
+                $this->currentTransducerIndex = (int)$computedValuesToProcess["index"];
+            }
         }
     }
 
@@ -362,11 +364,10 @@ class LazyWorker
      * Typically: when `flatten()` is the last transducer in the pipeline.
      *
      * @param integer $fromIndex
-     * @return array
+     * @return array<mixed>|\Traversable<mixed>
      */
-    protected function readAllFutureComputedValues(int $fromIndex): array
+    protected function readAllFutureComputedValues(int $fromIndex): array|\Traversable
     {
-        $output = [];
         $isFutureTransducerIndexWithComputedValues = function ($index) use ($fromIndex) {
             return $index > $fromIndex && $this->hasComputedValuesForIndex($index);
         };
@@ -396,6 +397,9 @@ class LazyWorker
     protected function updateFinalResult()
     {
         $lastTransducer = $this->getLastTransducer();
+        if (!$lastTransducer) {
+            return;
+        }
         $this->onNewValue($this->currentWorkingValue);
         $this->finalResultSoFar = $lastTransducer->computeFinalResult(
             $this->finalResultSoFar,
@@ -436,10 +440,10 @@ class LazyWorker
     }
 
     /**
-     * @param  array|\Iterator $subject
-     * @return \Iterator
+     * @param  array<mixed>|\Iterator<mixed> $subject
+     * @return \Iterator<mixed>
      */
-    protected static function iteratorFromSubject($subject)
+    protected static function iteratorFromSubject(array|\Iterator $subject)
     {
         if (\is_array($subject)) {
             return new ArrayIterator($subject);
@@ -447,16 +451,10 @@ class LazyWorker
         if ($subject instanceof \Iterator) {
             return $subject;
         }
-        throw new \InvalidArgumentException(
-            \sprintf("Could not create Iterator from subject")
-        );
     }
 
-    /**
-     * @return \LazyLists\Transducer\TransducerInterface
-     */
-    protected function getLastTransducer()
+    protected function getLastTransducer(): ?\LazyLists\Transducer\TransducerInterface
     {
-        return $this->transducers[\count($this->transducers) - 1];
+        return $this->transducers[\count($this->transducers) - 1] ?? null;
     }
 }

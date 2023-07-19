@@ -28,24 +28,27 @@ class Each extends PureTransducer implements TransducerInterface
         $this->sideEffect = $sideEffect;
     }
 
-    public function computeNextResult($item)
+    public function computeNextResult(mixed $item): void
     {
         $sideEffect = $this->sideEffect;
         $sideEffect($item);
-        $this->worker->yieldToNextTransducer($item);
+        $this->worker?->yieldToNextTransducer($item);
     }
 
-    public function getEmptyFinalResult()
+    public function getEmptyFinalResult(): mixed
     {
         return [];
     }
 
-    public function computeFinalResult($previousResult, $lastValue)
+    public function computeFinalResult(mixed $previousResult, mixed $lastValue): mixed
     {
         if (\is_null($previousResult)) {
             return [];
         }
-        $previousResult[] = $lastValue;
-        return $previousResult;
+        if ($previousResult instanceof \ArrayAccess || \is_array($previousResult)) {
+            $previousResult[] = $lastValue;
+            return $previousResult;
+        }
+        throw new \LogicException('Cannot use Each transducer on a non-array, non-ArrayAccess result');
     }
 }

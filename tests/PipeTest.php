@@ -138,7 +138,7 @@ class PipeTest extends TestCase
 
     public function testInvalidTransducers()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\TypeError::class);
         $pipe = pipe("notATransducer");
     }
 

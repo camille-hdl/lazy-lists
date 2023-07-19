@@ -20,12 +20,13 @@ use LazyLists\Exception\InvalidArgumentException;
  * Flattens nested arrays $levels deep. Ignores associative arrays.
  * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
  *
- * @param integer $levels
- * @param array|\Traversable|null $list
  * @see \LazyLists\Transducer\Flatten
- * @return mixed
+ * @template InputType
+ * @param integer $levels
+ * @param array<InputType>|\Traversable<InputType>|null $list
+ * @return ($list is null ? \LazyLists\Transducer\Flatten : array<InputType>|\Traversable<InputType>)
  */
-function flatten(int $levels, $list = null)
+function flatten(int $levels, array|\Traversable|null $list = null): array|\LazyLists\Transducer\Flatten|\Traversable
 {
     if (\is_null($list)) {
         return new \LazyLists\Transducer\Flatten($levels);
@@ -37,7 +38,10 @@ function flatten(int $levels, $list = null)
     $flattenItem = static function ($item) use (&$output, $levels) {
         foreach ($item as $child) {
             if (\is_array($child) && $levels > 1) {
-                $output = array_merge($output, flatten($levels - 1, $child));
+                $flattenedChildren = flatten($levels - 1, $child);
+                if (\is_array($flattenedChildren)) {
+                    $output = array_merge($output, $flattenedChildren);
+                }
             } else {
                 $output[] = $child;
             }

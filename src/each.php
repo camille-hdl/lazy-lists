@@ -20,12 +20,13 @@ use LazyLists\Exception\InvalidArgumentException;
  * Calls `$sideEffect` on each element in `$list`.
  * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
  *
- * @param callable $sideEffect
- * @param array|\Traversable|null $list
  * @see \LazyLists\Transducer\Map
- * @return mixed void or \LazyLists\Transducer\Map
+ * @template InputType
+ * @param callable(InputType, mixed|null): void $sideEffect
+ * @param array<InputType>|\Traversable<InputType>|null $list
+ * @return ($list is null ? \LazyLists\Transducer\Each : null)
  */
-function each(callable $sideEffect, $list = null)
+function each(callable $sideEffect, array|\Traversable|null $list = null): null|\LazyLists\Transducer\Each
 {
     if (\is_null($list)) {
         return new \LazyLists\Transducer\Each($sideEffect);
@@ -35,4 +36,5 @@ function each(callable $sideEffect, $list = null)
     foreach ($list as $key => $item) {
         $sideEffect($item, $key);
     }
+    return null;
 }

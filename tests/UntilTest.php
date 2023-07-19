@@ -22,7 +22,7 @@ class UntilTest extends TestCase
 
     public function testPassNoCollection()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\TypeError::class);
         until(function () {
             return false;
         }, 'invalidCollection');

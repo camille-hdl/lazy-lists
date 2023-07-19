@@ -31,27 +31,30 @@ class Filter extends PureTransducer implements TransducerInterface
         $this->predicate = $predicate;
     }
 
-    public function computeNextResult($item)
+    public function computeNextResult(mixed $item): void
     {
         $predicate = $this->predicate;
         if ($predicate($item)) {
-            $this->worker->yieldToNextTransducer($item);
+            $this->worker?->yieldToNextTransducer($item);
         } else {
-            $this->worker->skipToNextLoop();
+            $this->worker?->skipToNextLoop();
         }
     }
 
-    public function getEmptyFinalResult()
+    public function getEmptyFinalResult(): mixed
     {
         return [];
     }
 
-    public function computeFinalResult($previousResult, $lastValue)
+    public function computeFinalResult(mixed $previousResult, mixed $lastValue): mixed
     {
         if (\is_null($previousResult)) {
             return [];
         }
-        $previousResult[] = $lastValue;
-        return $previousResult;
+        if ($previousResult instanceof \ArrayAccess || \is_array($previousResult)) {
+            $previousResult[] = $lastValue;
+            return $previousResult;
+        }
+        throw new \LogicException('Cannot use Filter transducer on a non-array, non-ArrayAccess result');
     }
 }

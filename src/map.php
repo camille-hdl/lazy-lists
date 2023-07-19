@@ -20,12 +20,14 @@ use LazyLists\Exception\InvalidArgumentException;
  * Applies `$procedure` to each element in `$list` and returns an array of the result.
  * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
  *
- * @param callable $procedure
- * @param array|\Traversable|null $list
+ * @template InputType
+ * @template OutputType
  * @see \LazyLists\Transducer\Map
- * @return mixed array or \LazyLists\Transducer\Map
+ * @param callable(InputType, mixed|null): OutputType $procedure
+ * @param array<InputType>|\Traversable<InputType>|null $list
+ * @return ($list is null ? \LazyLists\Transducer\Map : array<OutputType>)
  */
-function map(callable $procedure, $list = null)
+function map(callable $procedure, array|\Traversable|null $list = null): array|\LazyLists\Transducer\Map
 {
     if (\is_null($list)) {
         return new \LazyLists\Transducer\Map($procedure);

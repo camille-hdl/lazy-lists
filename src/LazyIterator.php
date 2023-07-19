@@ -19,19 +19,24 @@ namespace LazyLists;
  *
  * This class can be instanciated by `LazyLists\iterate()`
  * @see \LazyLists\iterate
+ * @template InputType
+ * @implements \Iterator<int, mixed>
  */
 class LazyIterator extends LazyWorker implements \Iterator
 {
-    protected $key = 0;
-    protected $currentValueBuffer = [];
-    protected $currentValue = null;
-    protected $hasValue = false;
-    protected $canLoop = false;
+    protected int $key = 0;
     /**
-     * @param array|\Iterator $subject
-     * @param array $transducers
+     * @var array<mixed>
      */
-    public function __construct($subject, array $transducers)
+    protected array $currentValueBuffer = [];
+    protected mixed $currentValue = null;
+    protected bool $hasValue = false;
+    protected bool $canLoop = false;
+    /**
+     * @param array<InputType>|\Iterator<InputType> $subject
+     * @param \LazyLists\Transducer\TransducerInterface[] $transducers
+     */
+    public function __construct(array|\Iterator $subject, array $transducers)
     {
         parent::__construct($subject, $transducers);
         $this->registerValueCallback(function ($value) {
@@ -40,13 +45,13 @@ class LazyIterator extends LazyWorker implements \Iterator
         });
     }
 
-    public function iteratorInitialization()
+    public function iteratorInitialization(): void
     {
         $this->key = 0;
         $this->reset();
         if ($this->iterator->valid()) {
             $this->currentWorkingValue = $this->iterator->current();
-            $this->finalResultSoFar = $this->getLastTransducer()->getEmptyFinalResult();
+            $this->finalResultSoFar = $this->getLastTransducer()?->getEmptyFinalResult();
         }
         $this->computeFirstValue();
     }
@@ -63,10 +68,7 @@ class LazyIterator extends LazyWorker implements \Iterator
         $this->iterator->rewind();
     }
 
-    /**
-     * @return void
-     */
-    public function rewind()
+    public function rewind(): void
     {
         $this->iteratorInitialization();
     }
@@ -89,13 +91,13 @@ class LazyIterator extends LazyWorker implements \Iterator
         $this->setCurrentValueFromBuffer();
     }
 
-    protected function loopUntilNextValue()
+    protected function loopUntilNextValue(): void
     {
         $this->canLoop = true;
         $this->loop();
     }
 
-    protected function setCurrentValueFromBuffer()
+    protected function setCurrentValueFromBuffer(): void
     {
         if (\count($this->currentValueBuffer) > 0) {
             $this->hasValue = true;
@@ -103,7 +105,7 @@ class LazyIterator extends LazyWorker implements \Iterator
         }
     }
 
-    protected function computeCurrentValue()
+    protected function computeCurrentValue(): void
     {
         $this->hasValue = false;
         $this->key++;
@@ -113,22 +115,22 @@ class LazyIterator extends LazyWorker implements \Iterator
         $this->setCurrentValueFromBuffer();
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return $this->hasValue;
     }
 
-    public function next()
+    public function next(): void
     {
         $this->computeCurrentValue();
     }
 
-    public function current()
+    public function current(): mixed
     {
         return $this->currentValue;
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->key;
     }

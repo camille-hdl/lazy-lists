@@ -20,7 +20,7 @@ class ReduceTest extends TestCase
     }
     public function testPassNoCollection()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\TypeError::class);
         reduce(function () {
             return "";
         }, "", 'invalidCollection');

@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace LazyLists\Transducer;
 
+use ArrayAccess;
+
 /**
  * @see \LazyLists\filter
  */
@@ -31,28 +33,31 @@ class Until extends PureTransducer implements TransducerInterface
         $this->condition = $condition;
     }
 
-    public function computeNextResult($item)
+    public function computeNextResult(mixed $item): void
     {
         $condition = $this->condition;
         if ($condition($item)) {
-            $this->worker->completeEarly();
-            $this->worker->skipToNextLoop();
+            $this->worker?->completeEarly();
+            $this->worker?->skipToNextLoop();
         } else {
-            $this->worker->yieldToNextTransducer($item);
+            $this->worker?->yieldToNextTransducer($item);
         }
     }
 
-    public function getEmptyFinalResult()
+    public function getEmptyFinalResult(): mixed
     {
         return [];
     }
 
-    public function computeFinalResult($previousResult, $lastValue)
+    public function computeFinalResult(mixed $previousResult, mixed $lastValue): mixed
     {
         if (\is_null($previousResult)) {
             return [];
         }
-        $previousResult[] = $lastValue;
-        return $previousResult;
+        if ($previousResult instanceof \ArrayAccess || \is_array($previousResult)) {
+            $previousResult[] = $lastValue;
+            return $previousResult;
+        }
+        throw new \LogicException('Cannot use Until transducer on a non-array, non-ArrayAccess result');
     }
 }

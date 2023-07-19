@@ -22,16 +22,16 @@ use LazyLists\LazyWorker;
  */
 abstract class PureTransducer
 {
-    protected $worker;
-    public function __invoke($item)
+    protected ?LazyWorker $worker = null;
+    public function __invoke(mixed $item): void
     {
         $this->computeNextResult($item);
     }
 
-    public function initialize(LazyWorker $worker)
+    public function initialize(LazyWorker $worker): void
     {
         $this->worker = $worker;
     }
 
-    abstract public function computeNextResult($item);
+    abstract public function computeNextResult(mixed $item): void;
 }
