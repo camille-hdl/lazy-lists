@@ -1,6 +1,6 @@
 {
     "name": "camille\u002Dhdl\/lazy\u002Dlists",
-    "description": "Lazy list processing helpers",
+    "description": "Lazy list processing and transducers",
     "type": "library",
     "keywords": ["filter", "map", "reduce", "lazy", "iteration", "array", "iterator", "transducers"],
     "homepage": "https://github.com/camille\u002Dhdl/lazy\u002Dlists",
