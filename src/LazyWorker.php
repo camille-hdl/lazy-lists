@@ -170,7 +170,12 @@ class LazyWorker
     public function readNextItem()
     {
         $computedValuesInfo = $this->computedValuesToProcess();
-        if (!\is_null($computedValuesInfo) && is_array($computedValuesInfo) && isset($computedValuesInfo["index"])) {
+        if (
+            !\is_null($computedValuesInfo)
+            && is_array($computedValuesInfo)
+            && isset($computedValuesInfo["index"])
+            && is_numeric($computedValuesInfo["index"])
+        ) {
             $computedValue = $this->readComputedValueToProcessForIndex(
                 (int)$computedValuesInfo["index"]
             );
@@ -368,10 +373,9 @@ class LazyWorker
      */
     protected function readAllFutureComputedValues(int $fromIndex): array|\Traversable
     {
-        $isFutureTransducerIndexWithComputedValues = function ($index) use ($fromIndex) {
-            return $index > $fromIndex && $this->hasComputedValuesForIndex($index);
-        };
-        $getAllFutureValuesForIndex = function ($index) {
+        $isFutureTransducerIndexWithComputedValues =
+            (fn(int $index) => $index > $fromIndex && $this->hasComputedValuesForIndex($index));
+        $getAllFutureValuesForIndex = function (int $index) {
             $output = [];
             while ($this->hasComputedValuesForIndex($index)) {
                 $output[] = $this->readComputedValueToProcessForIndex($index);
@@ -448,9 +452,7 @@ class LazyWorker
         if (\is_array($subject)) {
             return new ArrayIterator($subject);
         }
-        if ($subject instanceof \Iterator) {
-            return $subject;
-        }
+        return $subject;
     }
 
     protected function getLastTransducer(): ?\LazyLists\Transducer\TransducerInterface

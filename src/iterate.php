@@ -26,7 +26,5 @@ namespace LazyLists;
  */
 function iterate(\LazyLists\Transducer\TransducerInterface ...$transducers)
 {
-    return function ($subject) use ($transducers) {
-        return new LazyIterator($subject, $transducers);
-    };
+    return fn(array|\Iterator $subject) => new LazyIterator($subject, $transducers);
 }

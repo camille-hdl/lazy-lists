@@ -59,6 +59,7 @@ class LazyIterator extends LazyWorker implements \Iterator
     /**
      * @return void
      */
+    #[\Override]
     protected function reset()
     {
         $this->initializeTransducers();
@@ -138,6 +139,7 @@ class LazyIterator extends LazyWorker implements \Iterator
     /**
      * @return void
      */
+    #[\Override]
     protected function loop()
     {
         while ($this->canLoop && $this->iterator->valid() && !$this->completedEarly) {
