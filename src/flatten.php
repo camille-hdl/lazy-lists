@@ -33,7 +33,7 @@ function flatten(int $levels, array|\Traversable|null $list = null): array|\Lazy
         return $list;
     }
     $output = [];
-    $flattenItem = static function ($item) use (&$output, $levels) {
+    $flattenItem = static function (array|\Traversable $item) use (&$output, $levels) {
         foreach ($item as $child) {
             if (\is_array($child) && $levels > 1) {
                 $flattenedChildren = flatten($levels - 1, $child);
