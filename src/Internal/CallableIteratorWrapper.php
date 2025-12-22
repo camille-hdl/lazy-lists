@@ -17,9 +17,14 @@ namespace LazyLists\Internal;
 /**
  * This class wraps a generator function (a Closure returning a Generator)
  * into an Iterator so that it can be used as a subject for LazyWorker (`pipe()`).
+ *
+ * @implements \Iterator<mixed, mixed>
  */
 class CallableIteratorWrapper implements \Iterator
 {
+    /**
+     * @var \Generator<mixed>|null
+     */
     private ?\Generator $generator = null;
     protected \Closure $originalGeneratorFn;
 
@@ -38,14 +43,16 @@ class CallableIteratorWrapper implements \Iterator
     {
         if (!$this->hasBeenCalledOnce()) {
             $generatorFn = $this->originalGeneratorFn;
-            $this->generator = $generatorFn();
+            /** @var \Generator<mixed> */
+            $generatorObject = $generatorFn();
+            $this->generator = $generatorObject;
         }
     }
 
     public function current(): mixed
     {
         $this->firstCall();
-        return $this->generator->current();
+        return $this->generator?->current() ?? null;
     }
 
     public function next(): void
@@ -53,7 +60,7 @@ class CallableIteratorWrapper implements \Iterator
         if (!$this->hasBeenCalledOnce()) {
             $this->firstCall();
         } else {
-            $this->generator->next();
+            $this->generator?->next();
         }
     }
 

@@ -445,7 +445,7 @@ class LazyWorker
     }
 
     /**
-     * @param  array<mixed>|\Iterator<mixed>|callable $subject
+     * @param  array<mixed>|\Iterator<mixed>|\Closure(): \Generator<mixed> $subject
      * @return \Iterator<mixed>
      */
     protected static function iteratorFromSubject(array|\Iterator|\Closure $subject)
