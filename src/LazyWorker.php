@@ -186,6 +186,7 @@ class LazyWorker
      * During iteration, provides the next item to be
      * processed, either from the wrapped Iterator or
      * from a value provided by an earlier transducer
+     * @return mixed|void
      */
     public function readNextItem()
     {
@@ -214,6 +215,7 @@ class LazyWorker
              * so we have to stop iteration.
              */
             $this->completedEarly = true;
+            return;
         }
     }
 

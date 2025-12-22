@@ -96,8 +96,12 @@ class IterateTest extends TestCase
     public function testReduceReadmeExample()
     {
         $reduceIterator = iterate(
-            reduce(function ($acc, $v) { return $acc + $v; }, 0),
-            until(function ($sum) { return $sum > 10; })
+            reduce(function ($acc, $v) {
+                return $acc + $v;
+            }, 0),
+            until(function ($sum) {
+                return $sum > 10;
+            })
         );
         $output = [];
         foreach ($reduceIterator([1, 5, 10, 20]) as $reduction) {

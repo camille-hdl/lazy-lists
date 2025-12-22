@@ -47,7 +47,7 @@ class UntilTest extends TestCase
 
     public function testDoesNotIterateTooMuch()
     {
-       $testValues = [
+        $testValues = [
             "a", "b", "c", "d", "e", "f", "g"
         ];
         $lettersTested = [];
@@ -79,7 +79,7 @@ class UntilTest extends TestCase
 
     public function testFlattenedValues()
     {
-       $testValues = [
+        $testValues = [
             ["a", 1],
             ["b", 2],
             ["c", 3],
