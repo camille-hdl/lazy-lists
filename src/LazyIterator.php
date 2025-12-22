@@ -142,7 +142,7 @@ class LazyIterator extends LazyWorker implements \Iterator
     #[\Override]
     protected function loop()
     {
-        while ($this->canLoop && $this->iterator->valid() && !$this->completedEarly) {
+        while ($this->canLoop && $this->hasNextItem() && !$this->completedEarly) {
             $currentTransducer = $this->getCurrentTransducer();
             $currentTransducer($this->currentWorkingValue);
         }

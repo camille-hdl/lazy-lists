@@ -16,7 +16,7 @@ namespace LazyLists;
 
 /**
  * Returns an array containing the elements of `$list` up to
- * an element for which $condition returns true (excluding this element).
+ * an element for which $condition returns true (including this element).
  * If $list is omitted, returns a Transducer to be used with `pipe()` instead.
  *
  * @template InputType

@@ -52,7 +52,8 @@ class CallableIteratorWrapper implements \Iterator
     public function current(): mixed
     {
         $this->firstCall();
-        return $this->generator?->current() ?? null;
+        $currentValue = $this->generator?->current() ?? null;
+        return $currentValue;
     }
 
     public function next(): void
@@ -78,7 +79,8 @@ class CallableIteratorWrapper implements \Iterator
 
     public function key(): mixed
     {
-        return $this->generator?->key() ?? 0;
+        $currentKey = $this->generator?->key() ?? 0;
+        return $currentKey;
     }
 
     public function valid(): bool
