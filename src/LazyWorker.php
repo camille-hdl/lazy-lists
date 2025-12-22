@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace LazyLists;
 
 use ArrayIterator;
+use LazyLists\Internal\CallableIteratorWrapper;
 
 use function LazyLists\map;
 use function LazyLists\filter;
@@ -75,10 +76,10 @@ class LazyWorker
     protected $newValueCallbacks = [];
 
     /**
-     * @param array<mixed>|\Iterator<mixed> $subject
+     * @param array<mixed>|\Iterator<mixed>|\Closure $subject
      * @param \LazyLists\Transducer\TransducerInterface[] $transducers
      */
-    public function __construct(array|\Iterator $subject, array $transducers)
+    public function __construct(array|\Iterator|\Closure $subject, array $transducers)
     {
         if (\count($transducers) <= 0) {
             throw new \LogicException(
@@ -444,13 +445,17 @@ class LazyWorker
     }
 
     /**
-     * @param  array<mixed>|\Iterator<mixed> $subject
+     * @param  array<mixed>|\Iterator<mixed>|callable $subject
      * @return \Iterator<mixed>
      */
-    protected static function iteratorFromSubject(array|\Iterator $subject)
+    protected static function iteratorFromSubject(array|\Iterator|\Closure $subject)
     {
         if (\is_array($subject)) {
             return new ArrayIterator($subject);
+        }
+        if ($subject instanceof \Closure) {
+            $wrapperSubject = new CallableIteratorWrapper($subject);
+            return $wrapperSubject;
         }
         return $subject;
     }
