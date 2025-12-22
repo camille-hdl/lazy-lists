@@ -17,12 +17,12 @@ namespace LazyLists\Transducer;
 use ArrayAccess;
 
 /**
- * @see \LazyLists\filter
+ * @see \LazyLists\until()
  */
 class Until extends PureTransducer implements TransducerInterface
 {
     /**
-     * Skips the $item if `$predicat($item)` returns falsy
+     * Stops iteration if `$condition($item)` returns truthy
      *
      * @var callable
      */
@@ -37,11 +37,9 @@ class Until extends PureTransducer implements TransducerInterface
     {
         $condition = $this->condition;
         if ($condition($item)) {
-            $this->worker?->completeEarly();
-            $this->worker?->skipToNextLoop();
-        } else {
-            $this->worker?->yieldToNextTransducer($item);
+            $this->worker?->onlyDownsteamTransducers();
         }
+        $this->worker?->yieldToNextTransducer($item);
     }
 
     public function getEmptyFinalResult(): mixed

@@ -22,6 +22,17 @@ class TakeTest extends TestCase
         $this->assertSame([1, 2], $pipe2([1, 2, 3]));
         $this->assertSame([1], $pipe2([1]));
     }
+    public function testDoesNotIterateTooMuch()
+    {
+        $processedValues = [];
+        $identity = map(function ($v) use (&$processedValues) {
+            $processedValues[] = $v;
+            return $v;
+        });
+        $pipe2 = pipe($identity, take(2));
+        $this->assertSame([1, 2], $pipe2([1, 2, 3, 4, 5, 6]));
+        $this->assertSame([1, 2], $processedValues);
+    }
     public function testSingleTransducer()
     {
         $pipe2 = pipe(take(2));

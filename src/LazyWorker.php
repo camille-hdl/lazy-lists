@@ -42,6 +42,13 @@ class LazyWorker
      * @var int
      */
     protected $currentTransducerIndex = 0;
+
+    /**
+     * If set, iteration will only consider transducers
+     * starting from this index in the pipeline.
+     */
+    protected int $transducersStartingIndex = 0;
+
     /**
      * @var mixed[]
      */
@@ -142,7 +149,7 @@ class LazyWorker
      */
     protected function loop()
     {
-        while ($this->iterator->valid() && !$this->completedEarly) {
+        while ($this->hasNextItem() && !$this->completedEarly) {
             $currentTransducer = $this->getCurrentTransducer();
             $currentTransducer($this->currentWorkingValue);
         }
@@ -161,12 +168,24 @@ class LazyWorker
         }
     }
 
+    public function hasNextItem(): bool
+    {
+        $computedValuesInfo = $this->computedValuesToProcess();
+        if (
+            !\is_null($computedValuesInfo)
+            && is_array($computedValuesInfo)
+            && isset($computedValuesInfo["index"])
+            && is_numeric($computedValuesInfo["index"])
+        ) {
+            return true;
+        }
+        return $this->iterator->valid();
+    }
+
     /**
      * During iteration, provides the next item to be
      * processed, either from the wrapped Iterator or
      * from a value provided by an earlier transducer
-     *
-     * @return mixed
      */
     public function readNextItem()
     {
@@ -182,9 +201,19 @@ class LazyWorker
             );
             return $computedValue;
         }
-        $this->iterator->next();
-        if ($this->iterator->valid()) {
-            return $this->iterator->current();
+        if ($this->transducersStartingIndex === 0) {
+            $this->iterator->next();
+            if ($this->iterator->valid()) {
+                return $this->iterator->current();
+            }
+        } else {
+            /**
+             * If transducersStartingIndex is not 0, that means that only iteration downstream
+             * from a given transducer is allowed. Therefore, we cannot read new values from the wrapped iterator.
+             * If we reach this point, it means there are no more computed values to process,
+             * so we have to stop iteration.
+             */
+            $this->completedEarly = true;
         }
     }
 
@@ -243,6 +272,22 @@ class LazyWorker
     public function completeEarly()
     {
         $this->shouldCompleteEarly = true;
+    }
+
+    /**
+     * Indicates that from now on, iteration should be limited to transducers below
+     * the current one in the pipeline.
+     * Therefore, no new values will be read from the wrapped Iterator, only computed values
+     * can be processed.
+     * However, if there are no transducers below, then iteration should be stopped as early as possible.
+     */
+    public function onlyDownsteamTransducers(): void
+    {
+        if (isset($this->transducers[$this->currentTransducerIndex + 1])) {
+            $this->transducersStartingIndex = $this->currentTransducerIndex + 1;
+        } else {
+            $this->completeEarly();
+        }
     }
 
     /**
@@ -314,7 +359,7 @@ class LazyWorker
      */
     protected function computedValuesToProcess()
     {
-        for ($i = $this->currentTransducerIndex; $i > 0; $i--) {
+        for ($i = $this->currentTransducerIndex; $i > $this->transducersStartingIndex; $i--) {
             if (
                 $this->hasComputedValuesForIndex($i)
             ) {
@@ -341,7 +386,7 @@ class LazyWorker
         $computedValuesToProcess = $this->computedValuesToProcess();
         if (\is_null($computedValuesToProcess)) {
             $this->computedFutureValues = [];
-            $this->currentTransducerIndex = 0;
+            $this->currentTransducerIndex = $this->transducersStartingIndex;
         } elseif (\is_array($computedValuesToProcess) && isset($computedValuesToProcess["index"])) {
             if (\is_numeric($computedValuesToProcess["index"])) {
                 $this->currentTransducerIndex = (int)$computedValuesToProcess["index"];

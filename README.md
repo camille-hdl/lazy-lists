@@ -106,10 +106,10 @@ $reduceIterator = iterate(
     reduce(function ($acc, $v) { return $acc + $v; }, 0),
     until(function ($sum) { return $sum > 10; })
 );
-foreach ($reduceIterator([1, 5, 10]) as $reduction) {
+foreach ($reduceIterator([1, 5, 10, 20]) as $reduction) {
     echo $reduction;
 }
-// 1, 5
+// 1, 6, 16
 ```
 
 ### Gotchas

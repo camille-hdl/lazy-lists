@@ -200,7 +200,8 @@ class PipeTest extends TestCase
     {
         $list = [
             [1, 2],
-            [3, 4]
+            [3, 4],
+            [5, 6],
         ];
         $c = 0;
         $pipe = pipe(
@@ -212,7 +213,7 @@ class PipeTest extends TestCase
                 return $c > 6;
             })
         );
-        $this->assertSame([1, 2, 3], $pipe($list));
+        $this->assertSame([1, 2, 3, 4], $pipe($list));
     }
 
     public function testGenerator()
