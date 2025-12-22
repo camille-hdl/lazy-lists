@@ -214,4 +214,28 @@ class PipeTest extends TestCase
         );
         $this->assertSame([1, 2, 3], $pipe($list));
     }
+
+    public function testGenerator()
+    {
+        $generator = (function () {
+            $testValues = [
+                "a", "b", "c", "d", "e"
+            ];
+            foreach ($testValues as $v) {
+                yield $v;
+            }
+        });
+        $isVowel = static function ($v) {
+            return \in_array($v, ["a", "e", "i", "o", "u", "y"], true);
+        };
+        $toUpper = static function ($v) {
+            return \mb_strtoupper($v);
+        };
+        $pipe = pipe(
+            filter($isVowel),
+            map($toUpper)
+        );
+        $output = $pipe($generator);
+        $this->assertSame(["A", "E"], $output);
+    }
 }

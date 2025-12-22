@@ -26,7 +26,7 @@ namespace LazyLists;
  */
 function pipe(\LazyLists\Transducer\TransducerInterface ...$transducers)
 {
-    return function (array|\Iterator $subject) use ($transducers) {
+    return function (array|\Iterator|\Closure $subject) use ($transducers) {
         $LazyWorker = new LazyWorker($subject, $transducers);
         return $LazyWorker();
     };
