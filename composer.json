@@ -1,22 +1,31 @@
 {
-    "name": "camille\u002Dhdl\/lazy\u002Dlists",
+    "name": "camille-hdl/lazy-lists",
     "description": "Lazy list processing and transducers",
     "type": "library",
-    "keywords": ["filter", "map", "reduce", "lazy", "iteration", "array", "iterator", "transducers"],
-    "homepage": "https://github.com/camille\u002Dhdl/lazy\u002Dlists",
+    "keywords": [
+        "filter",
+        "map",
+        "reduce",
+        "lazy",
+        "iteration",
+        "array",
+        "iterator",
+        "transducers"
+    ],
+    "homepage": "https://github.com/camille-hdl/lazy-lists",
     "license": "MIT",
     "authors": [
         {
-            "name": "Camille\u0020Hodoul",
-            "email": "camilleh\u0040hey.com",
-            "homepage": "https\u003A\/\/camillehdl.dev"
+            "name": "Camille Hodoul",
+            "email": "camilleh@hey.com",
+            "homepage": "https://camillehdl.dev"
         }
     ],
     "support": {
-        "docs": "https://github.com/camille\u002Dhdl/lazy\u002Dlists/",
-        "issues": "https://github.com/camille\u002Dhdl/lazy\u002Dlists/issues",
-        "rss": "https://github.com/camille\u002Dhdl/lazy\u002Dlists/releases.atom",
-        "source": "https://github.com/camille\u002Dhdl/lazy\u002Dlists.git"
+        "docs": "https://github.com/camille-hdl/lazy-lists/",
+        "issues": "https://github.com/camille-hdl/lazy-lists/issues",
+        "rss": "https://github.com/camille-hdl/lazy-lists/releases.atom",
+        "source": "https://github.com/camille-hdl/lazy-lists.git"
     },
     "require": {
         "php": "^8.1|^8.2|^8.3|^8.4"
@@ -85,5 +94,6 @@
         "phpunit/phpunit": "^10.2",
         "rector/rector": "^2.2",
         "squizlabs/php_codesniffer": "^3.7"
-    }
+    },
+    "version": "0.6.0"
 }
