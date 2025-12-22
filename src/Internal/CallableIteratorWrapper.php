@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @copyright Copyright (c) Camille Hodoul <camille.hodoul@gmail.com>
+ * @copyright Copyright (c) Camille Hodoul <camilleh@hey.com>
  * @license   http://opensource.org/licenses/MIT MIT
  */
 
